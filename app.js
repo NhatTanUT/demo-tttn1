@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
+var cors = require('cors')
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.set('views', './views')
 
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
+app.use(cors())
 
 const pathPublic = path.join(__dirname, './public')
 app.use(express.static(pathPublic))
