@@ -23,6 +23,8 @@ app.use(express.static(pathPublic))
 mongoose.connect(process.env.URI_DATABASE, {useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true})
 
 const Product = require('./models/product.model')
+const Category = require('./models/category.model')
+
 
 app.get('/product', async function(req, res) {
     const data = await Product.find({})
@@ -35,7 +37,7 @@ app.get('/product/:productId', async function(req, res) {
     res.status(200).send(data)
 })
 
-app.post('/', function(req, res) {
+app.post('/product', function(req, res) {
 
     let newProduct = new Product({
         "id": req.body.id,
@@ -56,6 +58,29 @@ app.post('/', function(req, res) {
         res.status(200).send('Fail')
     })
 })
+
+app.get('/category', async function (req, res) {
+    const data = await Category.find({}).populate('products')
+    res.status(200).send(data)
+})
+
+app.post('/category', function(req, res) {
+
+    let newCategory = new Category({
+        "id": req.body.id,
+        "products": req.body.products,
+        "category": req.body.category
+    })
+
+    newCategory.save()
+    .then(() => {
+        res.status(200).send('successful')
+    })
+    .catch(e => {
+        res.status(200).send('Fail')
+    })
+})
+
 
 const PORT = process.env.PORT || 3000;
 
