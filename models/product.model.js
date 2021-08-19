@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const PreviewImage = require('./previewImage.model')
 
 const productSchema = new mongoose.Schema({
     "id": {
@@ -17,6 +18,9 @@ const productSchema = new mongoose.Schema({
     "price": {
         type: Number
     },
+    "oldPrice": {
+        type: Number
+    },
     "description": {
         type: String
     },
@@ -24,6 +28,13 @@ const productSchema = new mongoose.Schema({
         type: Number
     },
     "category": {
+        type: String
+    },
+    "previewImage": [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PreviewImage
+    }],
+    "ventor": {
         type: String
     }
 })

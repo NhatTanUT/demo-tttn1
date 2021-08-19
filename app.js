@@ -24,10 +24,11 @@ mongoose.connect(process.env.URI_DATABASE, {useCreateIndex: true, useNewUrlParse
 
 const Product = require('./models/product.model')
 const Category = require('./models/category.model')
+const PreviewImage = require('./models/previewImage.model')
 
 
 app.get('/product', async function(req, res) {
-    const data = await Product.find({})
+    const data = await Product.find({}).populate('previewImage')
     res.status(200).send(data)
 })
 
@@ -81,6 +82,24 @@ app.post('/category', function(req, res) {
     })
 })
 
+app.get('/previewImage', async (req, res) => {
+    const data = await PreviewImage.find({})
+    res.status(200).send(data)
+}) 
+
+app.post('/previewImage', async (req, res) => {
+    let newPreviewImage = new PreviewImage({
+        "src": req.body.src
+    })
+
+    newPreviewImage.save()
+    .then(() => {
+        res.status(200).send('successful')
+    })
+    .catch(e => {
+        res.status(200).send('Fail')
+    })
+})
 
 const PORT = process.env.PORT || 3000;
 
