@@ -29,7 +29,7 @@ const PreviewImage = require('./models/previewImage.model')
 
 app.get('/product', async function(req, res) {
     const data = await Product.find({}).populate('previewImage')
-    res.status(200).send(data)
+    res.status(200).send({count: data.length, entries: data})
 })
 
 app.get('/product/:productId', async function(req, res) {
@@ -62,7 +62,7 @@ app.post('/product', function(req, res) {
 
 app.get('/category', async function (req, res) {
     const data = await Category.find({}).populate('products')
-    res.status(200).send(data)
+    res.status(200).send({count: data.length, entries: data})
 })
 
 app.post('/category', function(req, res) {
