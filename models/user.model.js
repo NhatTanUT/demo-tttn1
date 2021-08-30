@@ -7,25 +7,25 @@ var userSchema = mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
-        min: 3,
+        min: 1,
         max: 255
     },
     password: {
         type: String,
         required: true,
-        min: 6,
+        min: 1,
         max: 255
     },
     firstName: {
         type: String,
         required: true,
-        min: 6,
+        min: 1,
         max: 255
     },
     lastName: {
         type: String,
         required: true,
-        min: 6,
+        min: 1,
         max: 255
     }  
 })

@@ -30,6 +30,8 @@ const Product = require('./models/product.model')
 const Category = require('./models/category.model')
 const PreviewImage = require('./models/previewImage.model')
 
+require('./config/passport')(passport)
+
 // =========== SETUP SESSION ========================
 app.use(session({
     secret: process.env.SESSION_KEY,
