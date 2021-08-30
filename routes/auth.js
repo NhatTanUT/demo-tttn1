@@ -14,45 +14,40 @@ module.exports = function (app, passport) {
         res.redirect('http://localhost:8080/')
     })
 
-    app.post('/login', checkNotAuthenticated, (req, res) => {
-        const email = req.body.email
-        const pass = req.body.password
-        res.send({'email': email, 'password': pass})
-    })
+    // app.post('/login', checkNotAuthenticated, (req, res) => {
+    //     const email = req.body.email
+    //     const pass = req.body.password
+    //     res.send({'email': email, 'password': pass})
+    // })
 
-    app.post('/resgiter', (req, res) => {
-        const email = req.body.email
-        const pass = req.body.password
-        const firstName = req.body.firstName
-        const lastName = req.body.lastName
-        res.send({'email': email, 'password': pass, 'firstName': firstName, 'lastName': lastName})
-    })
+    // app.post('/resgiter', (req, res) => {
+    //     const email = req.body.email
+    //     const pass = req.body.password
+    //     const firstName = req.body.firstName
+    //     const lastName = req.body.lastName
+    //     res.send({'email': email, 'password': pass, 'firstName': firstName, 'lastName': lastName})
+    // })
 
 
-    // // Post Login
-    // app.post('/login', checkNotAuthenticated, passport.authenticate("local-login", {
-    //     successRedirect: 'http://localhost:8080/',
-    //     failureRedirect: 'http://localhost:8080/login',
-    //     failureFlash: true
-    // }));
+    // Post Login
+    app.post('/login', checkNotAuthenticated, passport.authenticate("local-login", {
+        successRedirect: 'http://localhost:8080/',
+        failureRedirect: 'http://localhost:8080/login',
+        failureFlash: true
+    }));
 
     // Post Register
-    // app.post('register', passport.authenticate('local-signup', {
-    //     successRedirect: '/admin/account', // chuyển hướng tới trang được bảo vệ
-    //     failureRedirect: '/admin/register', // trở lại trang đăng ký nếu có lỗi
-    //     failureFlash: true // allow flash messages
-    // }));
+    app.post('register', passport.authenticate('local-signup', {
+        successRedirect: 'http://localhost:8080/', // chuyển hướng tới trang được bảo vệ
+        failureRedirect: 'http://localhost:8080/register', // trở lại trang đăng ký nếu có lỗi
+        failureFlash: true // allow flash messages
+    }));
 
     app.get('/logout', (req, res) => {
         req.logout();
         res.redirect('/');
     })
 
-    app.get('/profile/:userid', checkAuthenticated, async (req, res) => {
-        if (req.user.id === req.params.userid) {
-            res.render("profile.ejs")
-        }
-    })
 }
 
 

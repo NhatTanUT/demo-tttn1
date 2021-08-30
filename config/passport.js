@@ -23,31 +23,31 @@ module.exports = function (passport) {
     passport.use('local-signup', new LocalStrategy({
             // mặc định local strategy sử dụng username và password,
             // chúng ta cần cấu hình lại
-            usernameField: 'id',
+            usernameField: 'email',
             passwordField: 'password',
             passReqToCallback: true // cho phép chúng ta gửi reqest lại hàm callback
         },
-        function (req, id, password, done) {
+        function (req, email, password, done) {
             // asynchronous
             // Hàm callback của nextTick chỉ được thực hiện khi hàm trên nó trong stack (LIFO) được thực hiện
             // User.findOne sẽ không được gọi cho tới khi dữ liệu được gửi lại
             process.nextTick(function () {
                 // Tìm một user theo email
                 // chúng ta kiểm tra xem user đã tồn tại hay không
-                User.findOne({'id': id}, function (err, user) {
+                User.findOne({'email': email}, function (err, user) {
                     if (err)
                         return done(err);
                     if (user) {
-                        return done(null, false,  {message: 'That username is already taken.'});
+                        return done(null, false,  {message: 'That email is already taken.'});
                     } else {
                         // Nếu chưa user nào sử dụng email này
                         // tạo mới user
                         var newUser = new User();
                         // lưu thông tin cho tài khoản local
-                        newUser.id = id;
+                        newUser.email = email;
                         newUser.password = newUser.generateHash(password);
-                        newUser.name = req.body.name
-                        newUser.role = req.body.role
+                        newUser.firstName = req.body.firstName
+                        newUser.lastName = req.body.lastName
                         // lưu user
                         newUser.save(function (err) {
                             if (err)
@@ -64,16 +64,16 @@ module.exports = function (passport) {
     
     // =================== LOCAL-LOGIN ========================
     passport.use('local-login', new LocalStrategy({
-        usernameField: 'id',
+        usernameField: 'email',
         passwordField: 'password',
         passReqToCallback: true
     },
-    function (req, id, password, done) { // callback với email và password từ html form
+    function (req, email, password, done) { // callback với email và password từ html form
         // find a user whose email is the same as the forms email
         // we are checking to see if the user trying to login already exists
         // tìm một user với email
         // chúng ta sẽ kiểm tra xem user có thể đăng nhập không
-        User.findOne({'id': id}, function (err, user) {
+        User.findOne({'email': email}, function (err, user) {
             if (err)
                 return done(err);
             // if no user is found, return the message
