@@ -29,6 +29,13 @@ const Product = require('./models/product.model')
 const Category = require('./models/category.model')
 const PreviewImage = require('./models/previewImage.model')
 
+
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
 require('./config/passport')(passport)
 
 // =========== SETUP SESSION ========================
@@ -45,11 +52,6 @@ app.use(session({
 // ================ ROUTE ===================
 require('./routes/auth')(app, passport)
 
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-  });
 
 app.get('/product', async function(req, res) {
     const data = await Product.find({}).populate('previewImage')
