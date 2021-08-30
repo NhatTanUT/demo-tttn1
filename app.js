@@ -7,7 +7,7 @@ const passport = require("passport");
 const session = require('express-session');
 const flash = require('express-flash')
 
-
+app.use(flash())
 
 const app = express()
 
