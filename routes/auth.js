@@ -14,10 +14,18 @@ module.exports = function (app, passport) {
         res.redirect('http://localhost:8080/')
     })
 
-    app.post('/login', (req, res) => {
+    app.post('/login', checkNotAuthenticated, (req, res) => {
         const email = req.body.email
         const pass = req.body.password
         res.send({'email': email, 'password': pass})
+    })
+
+    app.post('resgiter', (req, res) => {
+        const email = req.body.email
+        const pass = req.body.password
+        const firstName = req.body.firstName
+        const lastName = req.body.lastName
+        res.send({'email': email, 'password': pass, 'firstName': firstName, 'lastName': lastName})
     })
 
 
@@ -29,11 +37,11 @@ module.exports = function (app, passport) {
     // }));
 
     // Post Register
-    app.post('/admin/register', checkAuthenticated_admin, passport.authenticate('local-signup', {
-        successRedirect: '/admin/account', // chuyển hướng tới trang được bảo vệ
-        failureRedirect: '/admin/register', // trở lại trang đăng ký nếu có lỗi
-        failureFlash: true // allow flash messages
-    }));
+    // app.post('register', passport.authenticate('local-signup', {
+    //     successRedirect: '/admin/account', // chuyển hướng tới trang được bảo vệ
+    //     failureRedirect: '/admin/register', // trở lại trang đăng ký nếu có lỗi
+    //     failureFlash: true // allow flash messages
+    // }));
 
     app.get('/logout', (req, res) => {
         req.logout();
