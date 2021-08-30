@@ -31,15 +31,15 @@ module.exports = function (app, passport) {
 
     // Post Login
     app.post('/login', checkNotAuthenticated, passport.authenticate("local-login", {
-        successRedirect: 'http://localhost:8080/',
-        failureRedirect: 'http://localhost:8080/login',
+        successRedirect: 'https://vuetify-shop.netlify.app/',
+        failureRedirect: 'https://vuetify-shop.netlify.app/',
         failureFlash: true
     }));
 
     // Post Register
     app.post('/register', passport.authenticate('local-signup', {
-        successRedirect: 'http://localhost:8080/', // chuyển hướng tới trang được bảo vệ
-        failureRedirect: 'http://localhost:8080/register', // trở lại trang đăng ký nếu có lỗi
+        successRedirect: 'https://vuetify-shop.netlify.app/', // chuyển hướng tới trang được bảo vệ
+        failureRedirect: 'https://vuetify-shop.netlify.app/', // trở lại trang đăng ký nếu có lỗi
         failureFlash: true // allow flash messages
     }));
 
