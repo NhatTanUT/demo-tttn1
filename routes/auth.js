@@ -6,12 +6,12 @@ module.exports = function (app, passport) {
 
     // Redirect route login
     app.get("/", (req, res) => {
-        res.redirect("http://localhost:8080/login")
+        res.redirect("https://vuetify-shop.netlify.app/")
     })
 
     // Get login
     app.get("/login", checkNotAuthenticated, (req, res) => {
-        res.redirect('http://localhost:8080/')
+        res.redirect('https://vuetify-shop.netlify.app/')
     })
 
     // app.post('/login', checkNotAuthenticated, (req, res) => {
