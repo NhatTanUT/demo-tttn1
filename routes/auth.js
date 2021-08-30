@@ -20,7 +20,7 @@ module.exports = function (app, passport) {
         res.send({'email': email, 'password': pass})
     })
 
-    app.post('resgiter', (req, res) => {
+    app.post('/resgiter', (req, res) => {
         const email = req.body.email
         const pass = req.body.password
         const firstName = req.body.firstName
