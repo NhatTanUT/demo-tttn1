@@ -37,7 +37,7 @@ module.exports = function (app, passport) {
     }));
 
     // Post Register
-    app.post('register', passport.authenticate('local-signup', {
+    app.post('/register', passport.authenticate('local-signup', {
         successRedirect: 'http://localhost:8080/', // chuyển hướng tới trang được bảo vệ
         failureRedirect: 'http://localhost:8080/register', // trở lại trang đăng ký nếu có lỗi
         failureFlash: true // allow flash messages
