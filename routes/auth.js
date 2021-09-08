@@ -6,12 +6,12 @@ module.exports = function (app, passport) {
 
     // Redirect route login
     app.get("/", (req, res) => {
-        res.redirect("https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/")
+        res.redirect("localhost:8080")
     })
 
     // Get login
     app.get("/login", checkNotAuthenticated, (req, res) => {
-        res.redirect('https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/')
+        res.redirect('localhost:8080/login')
     })
 
     // app.post('/login', checkNotAuthenticated, (req, res) => {
@@ -31,15 +31,15 @@ module.exports = function (app, passport) {
 
     // Post Login
     app.post('/login', checkNotAuthenticated, passport.authenticate("local-login", {
-        successRedirect: 'https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/',
-        failureRedirect: 'https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/',
+        successRedirect: 'Login Success',
+        failureRedirect: 'Fail to login',
         failureFlash: true
     }));
 
     // Post Register
     app.post('/register', passport.authenticate('local-signup', {
-        successRedirect: 'https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/', // chuyển hướng tới trang được bảo vệ
-        failureRedirect: 'https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/', // trở lại trang đăng ký nếu có lỗi
+        successRedirect: 'Register Success', // chuyển hướng tới trang được bảo vệ
+        failureRedirect: 'Fail to register', // trở lại trang đăng ký nếu có lỗi
         failureFlash: true // allow flash messages
     }));
 
