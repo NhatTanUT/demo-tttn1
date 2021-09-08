@@ -6,12 +6,12 @@ module.exports = function (app, passport) {
 
     // Redirect route login
     app.get("/", (req, res) => {
-        res.redirect("https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/")
+        res.redirect("localhost:8080")
     })
 
     // Get login
     app.get("/login", checkNotAuthenticated, (req, res) => {
-        res.redirect('https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/')
+        res.redirect('localhost:8080/login')
     })
 
     // app.post('/login', checkNotAuthenticated, (req, res) => {
