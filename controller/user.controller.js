@@ -27,10 +27,10 @@ class UserController {
             const refresh_token = createRefreshToken({id: newUser._id})
 
             await newUser.save()
-            
-            res.cookie('refreshtoken', refresh_token, {
+
+            res.cookie('refresh_token', refresh_token, {
                 httpOnly: true,
-                path: '/api/refresh_token',
+                path: '/refresh_token',
                 maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
             })
 
@@ -60,7 +60,7 @@ class UserController {
             const access_token = createAccessToken({ id: user._id })
             const refresh_token = createRefreshToken({ id: user._id })
 
-            res.cookie('refreshtoken', refresh_token, {
+            res.cookie('refresh_token', refresh_token, {
                 httpOnly: true,
                 path: '/refresh_token',
                 maxAge: 30 * 24 * 60 * 60 * 1000 // 30days
@@ -80,7 +80,7 @@ class UserController {
     }
     async logout(req, res) {
         try {
-            res.clearCookie('refreshtoken', {path: '/refresh_token'})
+            res.clearCookie('refresh_token', {path: '/refresh_token'})
             return res.json({ msg: "Logged out!" })
         } catch (error) {
             return res.status(500).json({ msg: error.message })

@@ -3,6 +3,7 @@ const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
 var cors = require('cors')
+const cookiePasrer = require('cookie-parser');
 // const passport = require("passport");
 // const session = require('express-session');
 // const flash = require('express-flash')
@@ -17,7 +18,7 @@ app.set('views', './views')
 
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
-
+app.use(cookiePasrer());
 
 app.use(cors())
 
