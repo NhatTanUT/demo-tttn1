@@ -41,7 +41,7 @@ module.exports = function (app, passport) {
     });
 
     // Post Register
-    app.post('/register', passport.authenticate('local-signup'
+    app.post('/register', checkNotAuthenticated, passport.authenticate('local-signup'
     // , {
     //     successRedirect: 'https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/', // chuyển hướng tới trang được bảo vệ
     //     failureRedirect: 'https://612dadeaf6ded3000877c447--tandeptrai.netlify.app/', // trở lại trang đăng ký nếu có lỗi
