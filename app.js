@@ -3,9 +3,9 @@ const express = require('express')
 const path = require('path')
 const mongoose = require('mongoose')
 var cors = require('cors')
-const passport = require("passport");
-const session = require('express-session');
-const flash = require('express-flash')
+// const passport = require("passport");
+// const session = require('express-session');
+// const flash = require('express-flash')
 
 
 const app = express()
@@ -31,21 +31,22 @@ const Product = require('./models/product.model')
 const Category = require('./models/category.model')
 const PreviewImage = require('./models/previewImage.model')
 
-require('./config/passport')(passport)
+// require('./config/passport')(passport)
 
 // =========== SETUP SESSION ========================
-app.use(session({
-    secret: process.env.SESSION_KEY,
-    resave: false,
-    saveUninitialized: false
-  }));
+// app.use(session({
+//     secret: process.env.SESSION_KEY,
+//     resave: false,
+//     saveUninitialized: false
+//   }));
   
-  app.use(passport.initialize());
-  app.use(passport.session());
+//   app.use(passport.initialize());
+//   app.use(passport.session());
 
 
 // ================ ROUTE ===================
-require('./routes/auth')(app, passport)
+const userRoute = require('./routes/user.route')
+app.use('/', userRoute)
 
 
 app.get('/product', async function(req, res) {
