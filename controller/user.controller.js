@@ -204,7 +204,7 @@ class UserController {
       console.log(orderItems);
 
       const newOrder = new Order({
-        orderItems,
+        "OrderItems": orderItems,
         status,
         idUser,
         Datetime,
@@ -225,6 +225,15 @@ class UserController {
       await newOrder.save();
 
       return res.json({msg: 'Add order success', order: newOrder})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async getOrders(req, res) {
+    try {
+      const orders = await Order.find().lean()
+
+      res.json(orders)
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

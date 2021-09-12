@@ -4,79 +4,83 @@ const Product = require("./product.model");
 const User = require("./user.model");
 
 var orderSchema = mongoose.Schema({
-  OrderItems: [
+  "OrderItems": [
     {
-      id_product: {
+      "id_product": {
         type: mongoose.Types.ObjectId,
         ref: Product,
         required: true,
       },
-      quantity: {
+      "name": {
+        type: String,
+        required: true
+      },
+      "quantity": {
         type: Number,
         required: true,
       },
-      price: {
+      "price": {
         type: Number,
         required: true,
       },
     },
   ],
-  status: {
+  "status": {
     type: String,
     required: true,
     default: "Paid",
   },
-  idUser: {
+  "idUser": {
     type: mongoose.Types.ObjectId,
     required: true,
     ref: User,
   },
-  Datetime: {
+  "Datetime": {
     type: Date,
     required: true,
   },
-  total: {
+  "total": {
     type: Number,
     required: true,
   },
-  discount: {
+  "discount": {
     type: String,
   },
-  email: {
-    type: String,
-    required: true,
-  },
-  firstName: {
+  "email": {
     type: String,
     required: true,
   },
-  lastName: {
+  "firstName": {
     type: String,
     required: true,
   },
-  company: {
-    type: String,
-  },
-  address: {
+  "lastName": {
     type: String,
     required: true,
   },
-  apartment: {
+  "company": {
     type: String,
   },
-  city: {
-    type: String,
-    required: true,
-  },
-  country: {
+  "address": {
     type: String,
     required: true,
   },
-  postalCode: {
+  "apartment": {
+    type: String,
+  },
+  "city": {
     type: String,
     required: true,
   },
-  phone: {
+  "country": {
+    type: String,
+    required: true,
+  },
+  "postalCode": {
+    type: String,
+    required: true,
+  },
+  "phone": {
     type: String,
     required: true,
   },
