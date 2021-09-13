@@ -8,8 +8,7 @@ var orderSchema = mongoose.Schema({
     {
       "id_product": {
         type: mongoose.Types.ObjectId,
-        ref: Product,
-        required: true,
+        ref: Product
       },
       "name": {
         type: String,

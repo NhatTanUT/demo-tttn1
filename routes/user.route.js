@@ -15,5 +15,7 @@ router.get('/category', UserController.getCategories)
 router.get('/previewImage', UserController.getPreviewImage)
 router.post('/addOrder', UserController.addOrder);
 router.get('/order', UserController.getOrders)
+router.post('/resetPassword', UserController.sendResetPassword)
+router.post('/resetPassword/:id/:tokenResetPassword', UserController.resetPassword)
 
 module.exports = router;
