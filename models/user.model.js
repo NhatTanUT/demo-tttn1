@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
-const bcrypt = require('bcrypt')
+const Item = require('./item.model.js')
+const Product = require('../models/product.model')
 
 var userSchema = mongoose.Schema({
     email: {
@@ -27,7 +28,11 @@ var userSchema = mongoose.Schema({
         required: true,
         min: 1,
         max: 255
-    }  
+    },
+    cart: {
+        type: [Item.schema],
+        default: []
+    }
 })
 
 // methods ======================
