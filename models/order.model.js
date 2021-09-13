@@ -8,7 +8,8 @@ var orderSchema = mongoose.Schema({
     {
       "id_product": {
         type: mongoose.Types.ObjectId,
-        ref: Product
+        ref: Product,
+        required: true,
       },
       "name": {
         type: String,
@@ -31,7 +32,6 @@ var orderSchema = mongoose.Schema({
   },
   "idUser": {
     type: mongoose.Types.ObjectId,
-    required: true,
     ref: User,
   },
   "Datetime": {
