@@ -230,7 +230,8 @@ class UserController {
   }
   async getOrders(req, res) {
     try {
-      const orders = await Order.find().lean();
+      const id = req.user._id
+      const orders = await Order.find({_id: id}).lean();
 
       res.json(orders);
     } catch (error) {
@@ -391,7 +392,7 @@ class UserController {
   }
   async addCart(req, res) {
     try {
-      const { idProduct, quantity } = req.body;
+      const { idProduct, quantity, price} = req.body;
 
       const foundUser = await Users.findOne({ _id: req.user._id });
 
@@ -411,6 +412,7 @@ class UserController {
         const newItem = new Item({
           idProduct: mongoose.Types.ObjectId(idProduct),
           quantity,
+          price
         });
         cart.push(newItem);
       }
@@ -419,6 +421,26 @@ class UserController {
       return res.json({ msg: "Add cart success!" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
+    }
+  }
+  async removeCart(req, res) {
+    try {
+      const {idProduct} = req.body;
+      const id = req.user._id
+      const foundUser = await Users.updateOne({
+        _id: id
+      }, {
+        $pull: {
+          'cart': {
+            idProduct: idProduct
+          }
+        }
+      })
+
+      return res.json({msg: "Remove item from cart success"})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
     }
   }
 }
