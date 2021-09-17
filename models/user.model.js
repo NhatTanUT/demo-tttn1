@@ -32,6 +32,9 @@ var userSchema = mongoose.Schema({
     cart: {
         type: [Item.schema],
         default: []
+    },
+    wishlist: {
+        
     }
 })
 

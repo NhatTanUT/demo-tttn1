@@ -392,7 +392,7 @@ class UserController {
   }
   async addCart(req, res) {
     try {
-      const { idProduct, quantity, price} = req.body;
+      const { idProduct, quantity} = req.body;
 
       const foundUser = await Users.findOne({ _id: req.user._id });
 
@@ -400,10 +400,11 @@ class UserController {
         return res.status(400).json({ msg: "Invalid Authentication." });
 
       const cart = foundUser.cart;
+
       let change = false;
-      for (let i = 0; i < cart.length; i++) {
-        if (cart[i].idProduct === idProduct) {
-          cart[i].quanity += cart[i].quanity + quanity;
+      for (let i = 0; i < foundUser.cart.length; i++) {
+        if ((foundUser.cart[i].idProduct).toString() === (idProduct)) {
+          foundUser.cart[i].quantity = foundUser.cart[i].quantity + parseFloat(quantity);
           change = true;
         }
       }
@@ -411,10 +412,9 @@ class UserController {
       if (change === false) {
         const newItem = new Item({
           idProduct: mongoose.Types.ObjectId(idProduct),
-          quantity,
-          price
+          quantity
         });
-        cart.push(newItem);
+        foundUser.cart.push(newItem);
       }
 
       await foundUser.save();

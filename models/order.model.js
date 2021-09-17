@@ -6,7 +6,7 @@ const User = require("./user.model");
 var orderSchema = mongoose.Schema({
   "OrderItems": [
     {
-      "id_product": {
+      "idProduct": {
         type: mongoose.Types.ObjectId,
         ref: Product,
         required: true,
