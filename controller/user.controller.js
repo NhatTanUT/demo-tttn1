@@ -9,6 +9,7 @@ const mailer = require("../utils/mailer");
 const brcypt = require("bcrypt");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const stripe = require('stripe')('sk_test_51JaOiqBB6mnd2pw6z9xto29ShDJFpBgLgJydIJaHX31NegJQb2v7z9929mDyP1Lfd0ksL7qYj26du4KUnvcgntb900V5kC318H');
 
 class UserController {
   async register(req, res) {
@@ -231,7 +232,7 @@ class UserController {
   async getOrders(req, res) {
     try {
       const id = req.user._id
-      const orders = await Order.find({_id: id}).lean();
+      const orders = await Order.find({idUser: id}).lean();
 
       res.json(orders);
     } catch (error) {
@@ -343,7 +344,7 @@ class UserController {
       </html>`;
 
       await mailer.sendMail(to, subject, body);
-      return res.json({ msg: "Link reset was sent to email!" });
+      return res.json({ msg: "Link reset was sent to email!"});
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -376,8 +377,9 @@ class UserController {
     return res.json({ msg: "Reset password success!" });
   }
   async getResetPassword(req, res) {
-    var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    res.render("resetPassword", {link: fullUrl});
+    // var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    // res.render("resetPassword", {link: fullUrl});
+    res.render('resetPassword')
   }
   async getCart(req, res) {
     try {
@@ -418,7 +420,10 @@ class UserController {
       }
 
       await foundUser.save();
-      return res.json({ msg: "Add cart success!" });
+
+      const addProduct = await Product.findOne({_id: mongoose.Types.ObjectId(idProduct)}, 'img title price').lean()
+
+      return res.json({ msg: "Add cart success!", idProduct: addProduct, quantity });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -441,6 +446,64 @@ class UserController {
     } catch (error) {
       return res.status(500).json({ msg: error.message });
       
+    }
+  }
+  async checkout(req, res) {
+    try {
+      const {email, firstName, lastName, amount, 
+        number, exp_month, exp_year, cvc, 
+        company, address, apartment, city, 
+        country, postalCode, phone} = req.body
+      const id = req.user._id
+
+      const customer = await stripe.customers.create({
+        email: email,
+        name: firstName + " " + lastName
+      });
+
+      let param = {}
+      param.card = {
+        number,
+        exp_month,
+        exp_year,
+        cvc
+      }
+
+      let token = await stripe.tokens.create(param)
+
+      const addCard = await stripe.customers.createSource(customer.id, {source: token.id})
+
+      token = await stripe.tokens.create(param)
+
+      const charge = await stripe.charges.create({
+        amount,
+        description: "test",
+        currency: 'usd',
+        source: token.id
+      })
+      console.log(charge);
+      return res.json({msg: 'Success'})
+
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async changeInfo(req, res) {
+    try {
+      const {firstName, lastName} = req.body
+      const id = req.user._id
+
+      const foundUser = await Users.updateOne({_id: mongoose.Types.ObjectId(id)}, {
+        $set: {
+          firstName: firstName,
+          lastName: lastName
+        }
+      })
+
+      return res.json({msg: 'Change Info Success', user: {_id: id, firstName: firstName, lastName: lastName}})
+
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
     }
   }
 }

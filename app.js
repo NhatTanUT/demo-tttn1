@@ -19,7 +19,7 @@ app.use(cookiePasrer());
 app.use(cors());
 app.use(morgan("tiny"));
 
-const pathPublic = path.join(__dirname, "./public");
+const pathPublic = path.join(__dirname, "/public");
 app.use(express.static(pathPublic));
 
 // =============== MONGOOSE ==================
