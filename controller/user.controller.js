@@ -506,6 +506,18 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
+  async uploadFile(req, res) {
+    try {
+      if (req.file) {
+        res
+          .status(200)
+          .send({ path: req.file.path, origin: req.file.originalname });
+      }
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
 }
 
 function createAccessToken(payload) {

@@ -3,6 +3,7 @@ const route = express.Router();
 
 const UserController = require('../controller/user.controller');
 const auth = require('../middleware/auth')
+const upload = require('../middleware/upload')
 
 route.post('/register', UserController.register);
 route.post('/login', UserController.login);
@@ -23,5 +24,6 @@ route.post('/addCart', auth, UserController.addCart)
 route.post('/removeCart', auth, UserController.removeCart)
 route.post('/checkout', auth, UserController.checkout)
 route.post('/changeInfo', auth, UserController.changeInfo)
+route.post('/upload', upload.single('img'), UserController.uploadFile)
 
 module.exports = route;
