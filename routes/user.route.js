@@ -24,6 +24,7 @@ route.post('/addCart', auth, UserController.addCart)
 route.post('/removeCart', auth, UserController.removeCart)
 route.post('/checkout', auth, UserController.checkout)
 route.post('/changeInfo', auth, UserController.changeInfo)
+route.get('/getInfo', auth, UserController.getInfo)
 route.post('/upload', upload.single('img'), UserController.uploadFile)
 
 module.exports = route;
