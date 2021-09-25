@@ -103,6 +103,15 @@ class AdminController {
       return res.status(500).json({ msg: error });
     }
   }
+  async getAllOrder(req, res) {
+    try {
+      const allOrder = await Order.find({})
+
+      return res.json({...allOrder._doc})
+    } catch (error) {
+      return res.status(500).json({ msg: error });
+    }
+  }
 }
 
 module.exports = new AdminController();

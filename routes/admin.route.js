@@ -12,13 +12,13 @@ route.get('/', auth, auth_admin, (req, res) => {
     res.render('admin')
 })
 
-route.post('/register', auth, auth_admin, UserController.register)
-route.post('/previewImg', auth, auth_admin, upload.array('img', 10), AdminController.addPreview)
-route.post('/product', auth, auth_admin, upload.single('img'), AdminController.addProduct )
-route.post('/category', auth, auth_admin, AdminController.addCategory)
-route.post('/product/:idProduct', auth, auth_admin, AdminController.updateProduct)
-route.post('/category/:idCategory', auth, auth_admin, AdminController.updateCategory)
-route.get('/user', auth, auth_admin, AdminController.getAllUser)
-
+route.post('/register', UserController.register)
+route.post('/previewImg', upload.array('img', 10), AdminController.addPreview)
+route.post('/product', upload.single('img'), AdminController.addProduct )
+route.post('/category', AdminController.addCategory)
+route.post('/product/:idProduct', AdminController.updateProduct)
+route.post('/category/:idCategory', AdminController.updateCategory)
+route.get('/user', AdminController.getAllUser)
+route.get('/order', AdminController.getAllOrder)
 
 module.exports = route
