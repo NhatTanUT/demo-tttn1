@@ -9,17 +9,19 @@ const mailer = require("../utils/mailer");
 const brcypt = require("bcrypt");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const stripe = require('stripe')('sk_test_51JaOiqBB6mnd2pw6z9xto29ShDJFpBgLgJydIJaHX31NegJQb2v7z9929mDyP1Lfd0ksL7qYj26du4KUnvcgntb900V5kC318H');
+const stripe = require("stripe")(
+  "sk_test_51JaOiqBB6mnd2pw6z9xto29ShDJFpBgLgJydIJaHX31NegJQb2v7z9929mDyP1Lfd0ksL7qYj26du4KUnvcgntb900V5kC318H"
+);
 
 class UserController {
   async register(req, res) {
     try {
-      const { email, password, firstName, lastName } = req.body;
+      const { email, password, firstName, lastName, role } = req.body;
       // let newEmail = email.toLowerCase() // /g replace remove first element. /g to remove all (purpose: remove space)
 
       const foundEmail = await Users.findOne({ email: email });
       if (foundEmail)
-        res.status(400).json({ msg: "This email already registered. " });
+        return res.status(400).json({ msg: "This email already registered. " });
 
       if (password.length < 6)
         return res
@@ -28,11 +30,21 @@ class UserController {
 
       const passwordHash = await brcypt.hash(password, 12);
 
+      let role1 = "user";
+      if (req.user) {
+        if (req.user.role === "admin") {
+          if (role) {
+            role1 = role;
+          }
+        }
+      }
+
       const newUser = new Users({
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: passwordHash,
+        role: role1,
       });
 
       const access_token = createAccessToken({ id: newUser._id });
@@ -46,7 +58,7 @@ class UserController {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
-      res.json({
+      return res.json({
         msg: "Register Success! ",
         access_token,
         user: {
@@ -80,7 +92,7 @@ class UserController {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
       });
 
-      res.json({
+      return res.json({
         msg: "Login Success!",
         access_token,
         user: {
@@ -231,8 +243,8 @@ class UserController {
   }
   async getOrders(req, res) {
     try {
-      const id = req.user._id
-      const orders = await Order.find({idUser: id}).lean();
+      const id = req.user._id;
+      const orders = await Order.find({ idUser: id }).lean();
 
       res.json(orders);
     } catch (error) {
@@ -344,7 +356,7 @@ class UserController {
       </html>`;
 
       await mailer.sendMail(to, subject, body);
-      return res.json({ msg: "Link reset was sent to email!"});
+      return res.json({ msg: "Link reset was sent to email!" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -379,7 +391,7 @@ class UserController {
   async getResetPassword(req, res) {
     // var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     // res.render("resetPassword", {link: fullUrl});
-    res.render('resetPassword')
+    res.render("resetPassword");
   }
   async getCart(req, res) {
     try {
@@ -394,7 +406,7 @@ class UserController {
   }
   async addCart(req, res) {
     try {
-      const { idProduct, quantity} = req.body;
+      const { idProduct, quantity } = req.body;
 
       const foundUser = await Users.findOne({ _id: req.user._id });
 
@@ -405,8 +417,9 @@ class UserController {
 
       let change = false;
       for (let i = 0; i < foundUser.cart.length; i++) {
-        if ((foundUser.cart[i].idProduct).toString() === (idProduct)) {
-          foundUser.cart[i].quantity = foundUser.cart[i].quantity + parseFloat(quantity);
+        if (foundUser.cart[i].idProduct.toString() === idProduct) {
+          foundUser.cart[i].quantity =
+            foundUser.cart[i].quantity + parseFloat(quantity);
           change = true;
         }
       }
@@ -414,94 +427,128 @@ class UserController {
       if (change === false) {
         const newItem = new Item({
           idProduct: mongoose.Types.ObjectId(idProduct),
-          quantity
+          quantity,
         });
         foundUser.cart.push(newItem);
       }
 
       await foundUser.save();
 
-      const addProduct = await Product.findOne({_id: mongoose.Types.ObjectId(idProduct)}, 'img title price').lean()
+      const addProduct = await Product.findOne(
+        { _id: mongoose.Types.ObjectId(idProduct) },
+        "img title price"
+      ).lean();
 
-      return res.json({ msg: "Add cart success!", idProduct: addProduct, quantity });
+      return res.json({
+        msg: "Add cart success!",
+        idProduct: addProduct,
+        quantity,
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async removeCart(req, res) {
     try {
-      const {idProduct} = req.body;
-      const id = req.user._id
-      const foundUser = await Users.updateOne({
-        _id: id
-      }, {
-        $pull: {
-          'cart': {
-            idProduct: idProduct
-          }
+      const { idProduct } = req.body;
+      const id = req.user._id;
+      const foundUser = await Users.updateOne(
+        {
+          _id: id,
+        },
+        {
+          $pull: {
+            cart: {
+              idProduct: idProduct,
+            },
+          },
         }
-      })
+      );
 
-      return res.json({msg: "Remove item from cart success"})
+      return res.json({ msg: "Remove item from cart success" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async checkout(req, res) {
     try {
-      const {email, firstName, lastName, amount, 
-        number, exp_month, exp_year, cvc, 
-        company, address, apartment, city, 
-        country, postalCode, phone} = req.body
-      const id = req.user._id
+      const {
+        email,
+        firstName,
+        lastName,
+        amount,
+        number,
+        exp_month,
+        exp_year,
+        cvc,
+        company,
+        address,
+        apartment,
+        city,
+        country,
+        postalCode,
+        phone,
+      } = req.body;
+      const id = req.user._id;
 
       const customer = await stripe.customers.create({
         email: email,
-        name: firstName + " " + lastName
+        name: firstName + " " + lastName,
       });
 
-      let param = {}
+      let param = {};
       param.card = {
         number,
         exp_month,
         exp_year,
-        cvc
-      }
+        cvc,
+      };
 
-      let token = await stripe.tokens.create(param)
+      let token = await stripe.tokens.create(param);
 
-      const addCard = await stripe.customers.createSource(customer.id, {source: token.id})
+      const addCard = await stripe.customers.createSource(customer.id, {
+        source: token.id,
+      });
 
-      token = await stripe.tokens.create(param)
+      token = await stripe.tokens.create(param);
 
       const charge = await stripe.charges.create({
         amount,
         description: "test",
-        currency: 'usd',
-        source: token.id
-      })
+        currency: "usd",
+        source: token.id,
+      });
       console.log(charge);
-      return res.json({msg: 'Success'})
-
+      return res.json({ msg: "Success" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async changeInfo(req, res) {
     try {
-      const {firstName, lastName} = req.body
-      const id = req.user._id
+      const { firstName, lastName } = req.body;
+      const id = req.user._id;
 
-      const foundUser = await Users.updateOne({_id: mongoose.Types.ObjectId(id)}, {
-        $set: {
-          firstName: firstName,
-          lastName: lastName
+      if (firstName === "" || lastName === "") {
+        return res
+          .status(500)
+          .json({ msg: "Firstname or lastname not be empty" });
+      }
+
+      const foundUser = await Users.updateOne(
+        { _id: mongoose.Types.ObjectId(id) },
+        {
+          $set: {
+            firstName: firstName,
+            lastName: lastName,
+          },
         }
-      })
+      );
 
-      return res.json({msg: 'Change Info Success', user: {_id: id, firstName: firstName, lastName: lastName}})
-
+      return res.json({
+        msg: "Change Info Success",
+        user: { _id: id, firstName: firstName, lastName: lastName },
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
@@ -509,25 +556,28 @@ class UserController {
   async uploadFile(req, res) {
     try {
       if (req.file) {
-        res
+        return res
           .status(200)
           .send({ path: req.file.path, origin: req.file.originalname });
+      } else {
+        return res.status(500).json({ msg: "Error" });
       }
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async getInfo(req, res) {
     try {
-      const id = req.user._id
+      const id = req.user._id;
 
-      const foundUser = await Users.findOne({_id: mongoose.Types.ObjectId(id)}, '-password -cart')
-      
-      return res.json({...foundUser._doc})
+      const foundUser = await Users.findOne(
+        { _id: mongoose.Types.ObjectId(id) },
+        "-password -cart"
+      );
+
+      return res.json({ ...foundUser._doc });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
 }

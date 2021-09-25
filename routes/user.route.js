@@ -26,5 +26,8 @@ route.post('/checkout', auth, UserController.checkout)
 route.post('/changeInfo', auth, UserController.changeInfo)
 route.get('/getInfo', auth, UserController.getInfo)
 route.post('/upload', upload.single('img'), UserController.uploadFile)
+route.get('/', (req, res) => {
+    res.render('client')
+})
 
 module.exports = route;

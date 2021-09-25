@@ -1,55 +1,24 @@
-// admin
-// app.post('/product', function(req, res) {
+const express = require('express')
+const route = express.Router()
 
-//     let newProduct = new Product({
-//         "id": req.body.id,
-//         "img": req.body.img,
-//         "title": req.body.title,
-//         "rate": req.body.rate,
-//         "price": req.body.price,
-//         "description": req.body.description,
-//         "quantity": req.body.quantity,
-//         "category": req.body.category
-//     })
+const auth = require('../middleware/auth')
+const {auth_admin} = require('../middleware/decentralization')
+const upload = require('../middleware/upload')
 
-//     newProduct.save()
-//     .then(() => {
-//         res.status(200).send('successful')
-//     })
-//     .catch(e => {
-//         res.status(200).send('Fail')
-//     })
-// })
+const AdminController = require('../controller/admin.controller')
+const UserController = require('../controller/user.controller')
 
-// admin
-// app.post('/category', function(req, res) {
+route.get('/', auth, auth_admin, (req, res) => {
+    res.render('admin')
+})
 
-//     let newCategory = new Category({
-//         "id": req.body.id,
-//         "products": req.body.products,
-//         "category": req.body.category
-//     })
+route.post('/register', auth, auth_admin, UserController.register)
+route.post('/previewImg', auth, auth_admin, upload.array('img', 10), AdminController.addPreview)
+route.post('/product', auth, auth_admin, upload.single('img'), AdminController.addProduct )
+route.post('/category', auth, auth_admin, AdminController.addCategory)
+route.post('/product/:idProduct', auth, auth_admin, AdminController.updateProduct)
+route.post('/category/:idCategory', auth, auth_admin, AdminController.updateCategory)
+route.get('/user', auth, auth_admin, AdminController.getAllUser)
 
-//     newCategory.save()
-//     .then(() => {
-//         res.status(200).send('successful')
-//     })
-//     .catch(e => {
-//         res.status(200).send('Fail')
-//     })
-// })
 
-// admin
-// app.post('/previewImage', async (req, res) => {
-//     let newPreviewImage = new PreviewImage({
-//         "src": req.body.src
-//     })
-
-//     newPreviewImage.save()
-//     .then(() => {
-//         res.status(200).send('successful')
-//     })
-//     .catch(e => {
-//         res.status(200).send('Fail')
-//     })
-// })
+module.exports = route

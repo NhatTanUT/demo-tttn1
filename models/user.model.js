@@ -29,12 +29,18 @@ var userSchema = mongoose.Schema({
         min: 1,
         max: 255
     },
+    status: {
+        type: String,
+        required: true,
+        default: 'active'
+    },
     cart: {
         type: [Item.schema],
         default: []
     },
-    wishlist: {
-        
+    role: {
+        type: String,
+        required: true
     }
 })
 

@@ -4,7 +4,8 @@ const PreviewImage = require('./previewImage.model')
 const productSchema = new mongoose.Schema({
     "id": {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     "img": {
         type: String
