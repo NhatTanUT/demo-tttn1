@@ -11,27 +11,25 @@ class AdminController {
   async addPreview(req, res) {
     try {
       const { idProduct } = req.body;
-      let list = [];
+      let foundProduct = await Product.findOne({ _id: idProduct });
+
       req.files.forEach(async (e) => {
         let newPreviewImage = new PreviewImage({
           src: process.env.HOST_WEB + "uploads/" + e.originalname,
         });
 
         await newPreviewImage.save();
+        
+        foundProduct.previewImage.push(newPreviewImage._id);
+        
+        foundProduct.save();
 
-        list.push(mongoose.Types.ObjectId(newPreviewImage._id));
       });
-
-      let foundProduct = await Product.findOne({ _id: idProduct });
-
-      foundProduct.previewImage = foundProduct.previewImage.concat(list);
-
-      foundProduct.save();
-
+      
       return res.json({
         msg: "Add preview image success",
         idProduct: idProduct,
-        previewImg: list,
+        previewImg: foundProduct.previewImage,
       });
     } catch (error) {
       return res.status(500).json({ msg: error });
