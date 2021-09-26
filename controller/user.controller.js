@@ -585,7 +585,11 @@ class UserController {
       const id = req.user._id
       const {idProduct} = req.body
 
-      await Users.updateOne({_id: id}, {$push: {wishlist: idProduct}})
+      const foundUser = await Users.updateOne({_id: id}, {$addToSet: {wishlist: idProduct}})
+      if (foundUser.modifiedCount === 0) {
+        return res.status(500).json({msg: 'Product already exists in wishlist', id, idProduct})
+      }
+
       return res.json({msg: 'Add wishlist success', id, idProduct})
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -595,8 +599,19 @@ class UserController {
     try {
       const id = req.user._id
       const foundUser = await Users.findOne({_id: id}, 'wishlist').populate('wishlist')
-      console.log(foundUser);
+      
       return res.json({...foundUser._doc})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async removeWishlist(req, res) {
+    try {
+      const id = req.user._id
+      const {idProduct} = req.body
+
+      await Users.updateOne({_id: id}, {$pull: {wishlist: mongoose.Types.ObjectId(idProduct)}})
+      return res.json({msg: "Remove product from wishlist success", id, idProduct})
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
