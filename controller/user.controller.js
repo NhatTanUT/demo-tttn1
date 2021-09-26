@@ -580,6 +580,27 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
+  async addWishlist(req, res) {
+    try {
+      const id = req.user._id
+      const {idProduct} = req.body
+
+      await Users.updateOne({_id: id}, {$push: {wishlist: idProduct}})
+      return res.json({msg: 'Add wishlist success', id, idProduct})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async getWishlist(req, res) {
+    try {
+      const id = req.user._id
+      const foundUser = await Users.findOne({_id: id}, 'wishlist').populate('wishlist')
+      console.log(foundUser);
+      return res.json({...foundUser._doc})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
 }
 
 function createAccessToken(payload) {

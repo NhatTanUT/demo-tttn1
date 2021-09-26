@@ -41,6 +41,12 @@ var userSchema = mongoose.Schema({
     role: {
         type: String,
         required: true
+    },
+    wishlist: {
+        type: [String],
+        required: true,
+        ref: Product,
+        default: []
     }
 })
 
