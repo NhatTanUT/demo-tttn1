@@ -8,7 +8,7 @@ const upload = require('../middleware/upload')
 const AdminController = require('../controller/admin.controller')
 const UserController = require('../controller/user.controller')
 
-route.get('/', auth, auth_admin, (req, res) => {
+route.get('/', (req, res) => {
     res.render('admin')
 })
 
