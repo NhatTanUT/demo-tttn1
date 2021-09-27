@@ -526,7 +526,7 @@ class UserController {
   }
   async changeInfo(req, res) {
     try {
-      const { firstName, lastName } = req.body;
+      const { firstName, lastName, phonenumber, gender, DOB } = req.body;
       const id = req.user._id;
 
       if (firstName === "" || lastName === "") {
@@ -539,8 +539,11 @@ class UserController {
         { _id: mongoose.Types.ObjectId(id) },
         {
           $set: {
-            firstName: firstName,
-            lastName: lastName,
+            firstName,
+            lastName,
+            phonenumber,
+            gender,
+            DOB
           },
         }
       );

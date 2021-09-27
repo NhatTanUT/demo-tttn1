@@ -34,6 +34,18 @@ var userSchema = mongoose.Schema({
     required: true,
     default: "active",
   },
+  gender: {
+    type: String,
+    enum: ['Male', 'Female', 'Unknown'],
+  },
+  DOB: {
+    type: Date
+  },
+  phonenumber: {
+    type: String,
+    min: 1, 
+    max: 12,
+  },
   cart: {
     type: [Item.schema],
     default: [],
