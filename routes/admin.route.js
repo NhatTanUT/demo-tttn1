@@ -20,5 +20,6 @@ route.post('/product/:idProduct', AdminController.updateProduct)
 route.post('/category/:idCategory', AdminController.updateCategory)
 route.get('/user', AdminController.getAllUser)
 route.get('/order', AdminController.getAllOrder)
+route.post('/sendMailWishlist', AdminController.sendMailWishList)
 
 module.exports = route

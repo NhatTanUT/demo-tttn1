@@ -10,13 +10,13 @@ const brcypt = require("bcrypt");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const stripe = require("stripe")(
-  "sk_test_51JaOiqBB6mnd2pw6z9xto29ShDJFpBgLgJydIJaHX31NegJQb2v7z9929mDyP1Lfd0ksL7qYj26du4KUnvcgntb900V5kC318H"
+  process.env.STRIPE_KEY
 );
 
 class UserController {
   async register(req, res) {
     try {
-      const { email, password, firstName, lastName, role } = req.body;
+      const { email, password, firstName, lastName, role, gender, DOB } = req.body;
       // let newEmail = email.toLowerCase() // /g replace remove first element. /g to remove all (purpose: remove space)
 
       const foundEmail = await Users.findOne({ email: email });
@@ -45,6 +45,8 @@ class UserController {
         email: email,
         password: passwordHash,
         role: role1,
+        DOB,
+        gender
       });
 
       const access_token = createAccessToken({ id: newUser._id });
