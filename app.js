@@ -43,7 +43,11 @@ mongoose.connect(process.env.URI_DATABASE, {
 
 // =============== SOCKET.IO ==================
 const onlineClients = new Set(); // list client online
-const io = socketio(server);
+const io = socketio(server, {
+  cors: {
+    origin: '*',
+  }
+});
 
 let countOnlineClients = 0;
 
