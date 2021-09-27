@@ -23,16 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookiePasrer());
 app.use(cors());
-app.options('*', cors());
 app.use(morgan("dev"));
 app.use("/uploads", express.static("uploads"));
 app.use(express.static(pathPublic));
-
-app.all('/*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});
 
 // =============== MONGOOSE ==================
 
