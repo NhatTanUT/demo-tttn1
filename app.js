@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookiePasrer());
 app.use(cors());
+app.options('*', cors());
 app.use(morgan("dev"));
 app.use("/uploads", express.static("uploads"));
 app.use(express.static(pathPublic));
