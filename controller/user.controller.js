@@ -16,7 +16,7 @@ const stripe = require("stripe")(
 class UserController {
   async register(req, res) {
     try {
-      const { email, password, firstName, lastName, role, gender, DOB } = req.body;
+      const { email, password, firstName, lastName, role, gender, DOB, phonenumber } = req.body;
       // let newEmail = email.toLowerCase() // /g replace remove first element. /g to remove all (purpose: remove space)
 
       const foundEmail = await Users.findOne({ email: email });
@@ -46,7 +46,8 @@ class UserController {
         password: passwordHash,
         role: role1,
         DOB,
-        gender
+        gender,
+        phonenumber
       });
 
       const access_token = createAccessToken({ id: newUser._id });
