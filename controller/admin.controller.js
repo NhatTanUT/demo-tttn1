@@ -96,8 +96,8 @@ class AdminController {
   async getAllUser(req, res) {
     try {
       const allUser = await Users.find({}, "-password -cart")
-
-      return res.json({ ...allUser._doc });
+  
+      return res.json({ allUser });
     } catch (error) {
       return res.status(500).json({ msg: error });
     }

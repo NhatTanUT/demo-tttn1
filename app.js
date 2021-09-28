@@ -1,7 +1,6 @@
 const dotenv = require("dotenv");
 const express = require("express");
 const path = require("path");
-const mongoose = require("mongoose");
 var cors = require("cors");
 const cookiePasrer = require("cookie-parser");
 const morgan = require("morgan");
@@ -28,11 +27,9 @@ app.use("/uploads", express.static("uploads"));
 app.use(express.static(pathPublic));
 
 // =============== MONGOOSE ==================
+const connectDatabase = require('./config/db.config');
 
-mongoose.connect(process.env.URI_DATABASE, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+connectDatabase();
 
 // =============== SOCKET.IO ==================
 const onlineClients = new Set(); // list client online
