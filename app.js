@@ -70,7 +70,6 @@ io.on('connection', function (socket) {
   })
 })
 
-export {io, onlineClients}
 
 // ================ ROUTE ===================
 const userRoute = require("./routes/user.route");
