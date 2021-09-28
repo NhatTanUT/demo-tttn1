@@ -1,6 +1,6 @@
 
 
-var socket = io(window.location.host)
+var socket = io('https://web-demo.online')
 
 $('#click').click(() => {
     socket.emit('Admin-sent-notification', {

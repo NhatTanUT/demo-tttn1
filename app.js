@@ -43,12 +43,17 @@ let countOnlineClients = 0;
 
 io.on('connection', function (socket) {
   console.info(`Socket ${socket.id} has connected.`);
-  onlineClients.add(socket.id);
+  onlineClients.add({socketId: socket.id, userId: ''});
   countOnlineClients ++;
   console.log('Count Online Client: ' + countOnlineClients);
 
   socket.on('disconnect', () => {
-    onlineClients.delete(socket.id);
+    onlineClients.forEach(function(so){
+      if (so.socketId === socket.id){
+        onlineClients.delete(so)
+      }
+    })
+
     countOnlineClients --;
     console.info(`Socket ${socket.id} has disconnected.`);
     console.log('Count Online Client: ' + countOnlineClients);
@@ -60,10 +65,12 @@ io.on('connection', function (socket) {
     })
   })
 
-
+  socket.on('Login', function (data) {
+    console.log(data);
+  })
 })
 
-
+export {io, onlineClients}
 
 // ================ ROUTE ===================
 const userRoute = require("./routes/user.route");
