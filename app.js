@@ -38,7 +38,8 @@ const connectDatabase = require('./config/db.config');
 connectDatabase();
 
 // =============== SOCKET.IO ==================
-const onlineClients = new Set(); // list client online
+
+global.onlineClients = new Set(); // list client online
 const io = socketio(server, {
   cors: {
     origin: '*',
@@ -46,7 +47,7 @@ const io = socketio(server, {
 });
 
 let countOnlineClients = 0;
-const getClientOnline = () => onlineClients;
+const getClientOnline = () => {onlineClients: onlineClients};
 io.on('connection', function (socket) {
   console.info(`Socket ${socket.id} has connected.`);
   onlineClients.add({socketId: socket.id, userId: ''});
