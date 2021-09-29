@@ -70,7 +70,7 @@ io.on('connection', function (socket) {
       if (so.socketId === socket.id){
         onlineClients.delete(so)
         onlineClients.add({socketId: socket.id, userId: data});
-        console.log(onlineClients);
+        
       }
     })
   })
