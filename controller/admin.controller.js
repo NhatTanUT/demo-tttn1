@@ -106,7 +106,7 @@ class AdminController {
     try {
       const allOrder = await Order.find({})
 
-      return res.json({...allOrder._doc})
+      return res.json({allOrder})
     } catch (error) {
       return res.status(500).json({ msg: error });
     }
