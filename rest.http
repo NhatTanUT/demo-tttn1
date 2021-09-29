@@ -1,1 +1,8 @@
-GET https://web-demo.online/admin/clientOnline
+POST https://web-demo.online/admin/notify
+content-type: application/json
+
+{
+    "listUser": ["615331ffc7dc43e2e5c84f45"],
+    "content": "Hello"
+
+}

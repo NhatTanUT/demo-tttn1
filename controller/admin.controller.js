@@ -332,8 +332,9 @@ class AdminController {
       listUser.forEach(async (e) => {
         const foundUser = listOnline.map((el) => el.userId === e)
         if (foundUser) {
-          console.log(foundUser);
+          
           foundUser.map(ell => {
+            console.log(ell.socketId);
             io.to(ell.socketId).emit('Server-sent-notify', {content: content})
           })
         }
