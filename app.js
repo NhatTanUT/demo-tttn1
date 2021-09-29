@@ -50,12 +50,15 @@ const getClientOnline = function () {
 let countOnlineClients = 0;
 io.on('connection', function (socket) {
   console.info(`Socket ${socket.id} has connected.`);
+  onlineClients = onlineClients.filter(e => {
+    return e.socketId !== socket.id
+  })
   onlineClients.push({socketId: socket.id, userId: ''});
   countOnlineClients ++;
   console.log('Count Online Client: ' + countOnlineClients);
 
   socket.on('disconnect', () => {
-    onlineClients.filter(e => {
+    onlineClients = onlineClients.filter(e => {
       return e.socketId !== socket.id
     })
     // onlineClients.forEach(function(so){
