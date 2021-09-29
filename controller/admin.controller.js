@@ -337,7 +337,7 @@ class AdminController {
           })
         }
       })
-      return 
+      return res.json({msg: "Send notification", listUser, content})
     } catch (error) {
       return res.status(500).json({ msg: error });
     }
