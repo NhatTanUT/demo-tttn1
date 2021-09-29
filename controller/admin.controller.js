@@ -6,7 +6,6 @@ const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const mailer = require('../utils/mailer')
 const {io, getClientOnline} = require('../app')
-io.set('origins', '*:*');
 
 const mongoose = require("mongoose");
 
