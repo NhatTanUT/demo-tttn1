@@ -38,26 +38,31 @@ const connectDatabase = require('./config/db.config');
 connectDatabase();
 
 // =============== SOCKET.IO ==================
-let onlineClients = new Set(); // list client online
+let onlineClients = []; // list client online
 const io = socketio(server, {
   cors: {
     origin: '*',
   }
 });
-
+const getAllClientOnline = function () {
+  return onlineClients
+}
 let countOnlineClients = 0;
 io.on('connection', function (socket) {
   console.info(`Socket ${socket.id} has connected.`);
-  onlineClients.add({socketId: socket.id, userId: ''});
+  onlineClients.push({socketId: socket.id, userId: ''});
   countOnlineClients ++;
   console.log('Count Online Client: ' + countOnlineClients);
 
   socket.on('disconnect', () => {
-    onlineClients.forEach(function(so){
-      if (so.socketId === socket.id){
-        onlineClients.delete(so)
-      }
+    onlineClients.filter(e => {
+      return e.socketId !== socket.id
     })
+    // onlineClients.forEach(function(so){
+    //   if (so.socketId === socket.id){
+    //     onlineClients.delete(so)
+    //   }
+    // })
 
     countOnlineClients --;
     console.info(`Socket ${socket.id} has disconnected.`);
@@ -71,17 +76,20 @@ io.on('connection', function (socket) {
   // })
 
   socket.on('Login', function (data) {
-    onlineClients.forEach(function(so){
-      if (so.socketId === socket.id){
-        onlineClients.delete(so)
-        onlineClients.add({socketId: socket.id, userId: data});
-        console.log(onlineClients);
-      }
+    onlineClients.filter(e => {
+      return e.socketId !== socket.id
     })
+    onlineClients.push({socketId: socket.id, userId: data})
+    // onlineClients.forEach(function(so){
+    //   if (so.socketId === socket.id){
+    //     onlineClients.delete(so)
+    //     onlineClients.add({socketId: socket.id, userId: data});
+    //   }
+    // })
   })
 })
 
-module.exports = {io, onlineClients}
+module.exports = {io, getAllClientOnline}
 
 
 // ================ ROUTE ===================
