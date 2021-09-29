@@ -118,3 +118,5 @@ dist
 .pnp.*
 
 uploads/
+web-chat.ppk
+*.http
