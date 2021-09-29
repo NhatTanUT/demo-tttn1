@@ -2,7 +2,7 @@ POST https://web-demo.online/admin/notify
 content-type: application/json
 
 {
-    "listUser": ["615331ffc7dc43e2e5c84f45"],
+    "listUser": ["61549170d86e7a2ba4af28ed"],
     "content": "Hello"
 
 }

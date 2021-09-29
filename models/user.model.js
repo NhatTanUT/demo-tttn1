@@ -60,6 +60,7 @@ var userSchema = mongoose.Schema({
     ref: Product,
     default: [],
   },
+  notification: {}
 });
 
 // methods ======================
