@@ -5,6 +5,7 @@ const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const mailer = require('../utils/mailer')
+const {io, onlineClients} = require('../app')
 
 const mongoose = require("mongoose");
 
@@ -300,6 +301,24 @@ class AdminController {
       )
       
       return res.json({msg: "Send Mail WishList", foundWishlist, foundProduct})
+    } catch (error) {
+      return res.status(500).json({ msg: error });
+      
+    }
+  }
+  async sendPromotion(req, res) {
+    try {
+      const {content} = req.body
+
+      io.emit('Server-sent-notification', content)
+      return res.json({msg: 'Send promotion success', content})
+    } catch (error) {
+      return res.status(500).json({ msg: error });
+    }
+  }
+  async getAllClientOnline(req, res) {
+    try {
+      return res.json({onlineClients})
     } catch (error) {
       return res.status(500).json({ msg: error });
       

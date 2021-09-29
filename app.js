@@ -59,16 +59,24 @@ io.on('connection', function (socket) {
     console.log('Count Online Client: ' + countOnlineClients);
   })
 
-  socket.on('Admin-sent-notification', function (data) {
-    socket.broadcast.emit('Server-sent-notification', {
-      content: data.content
-    })
-  })
+  // socket.on('Admin-sent-notification', function (data) {
+  //   socket.broadcast.emit('Server-sent-notification', {
+  //     content: data.content
+  //   })
+  // })
 
   socket.on('Login', function (data) {
-    console.log(data);
+    onlineClients.forEach(function(so){
+      if (so.socketId === socket.id){
+        onlineClients.delete(so)
+        onlineClients.add({socketId: socket.id, userId: data});
+        console.log(onlineClients);
+      }
+    })
   })
 })
+
+module.exports = {io, onlineClients}
 
 
 // ================ ROUTE ===================
