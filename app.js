@@ -46,7 +46,7 @@ const io = socketio(server, {
 });
 
 let countOnlineClients = 0;
-
+const getClientOnline = () => onlineClients;
 io.on('connection', function (socket) {
   console.info(`Socket ${socket.id} has connected.`);
   onlineClients.add({socketId: socket.id, userId: ''});
@@ -82,7 +82,7 @@ io.on('connection', function (socket) {
   })
 })
 
-module.exports = {io, onlineClients}
+module.exports = {io, getClientOnline}
 
 
 // ================ ROUTE ===================
