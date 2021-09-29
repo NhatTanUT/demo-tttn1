@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Item = require("./item.model.js");
 const Product = require("../models/product.model");
+const itemNotificationModel = require("./item.notification.model.js");
+
 
 var userSchema = mongoose.Schema({
   email: {
@@ -36,14 +38,14 @@ var userSchema = mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['Male', 'Female', 'Unknown'],
+    enum: ["Male", "Female", "Unknown"],
   },
   DOB: {
-    type: Date
+    type: Date,
   },
   phonenumber: {
     type: String,
-    min: 1, 
+    min: 1,
     max: 12,
   },
   cart: {
@@ -60,7 +62,10 @@ var userSchema = mongoose.Schema({
     ref: Product,
     default: [],
   },
-  notification: {}
+  notification: {
+    type: [itemNotificationModel.schema],
+    default: []
+  }
 });
 
 // methods ======================

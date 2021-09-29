@@ -4,6 +4,7 @@ const Category = require("../models/category.model");
 const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
+
 const mailer = require('../utils/mailer')
 const {io, getClientOnline} = require('../app')
 
@@ -332,10 +333,11 @@ class AdminController {
       const listOnline = getClientOnline()
       listUser.forEach(async (e) => {
         const foundUser = listOnline.filter((el) => {if (el.userId === e) return el})
-        console.log(foundUser);
+        
         if (foundUser) {
           foundUser.map(ell => {
             io.to(ell.socketId).emit('Server-sent-notify', {content: content})
+            await Users.updateOne({_id: mongoose.Types.ObjectId(ell.userId)}, {$push: {notification: {content: content, Date: Date()}}})
           })
         }
       })
