@@ -5,7 +5,7 @@ const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const mailer = require('../utils/mailer')
-const {io, onlineClients} = require('../app')
+const {io, getClientOnline} = require('../app')
 
 const mongoose = require("mongoose");
 
@@ -318,8 +318,8 @@ class AdminController {
   }
   async getAllClientOnline(req, res) {
     try {
-      console.log(onlineClients);
-      return res.json({client: onlineClients})
+      const list = getClientOnline()
+      return res.json({client: list})
     } catch (error) {
       return res.status(500).json({ msg: error });
       
