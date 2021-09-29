@@ -310,7 +310,7 @@ class AdminController {
     try {
       const {content} = req.body
 
-      io.emit('Server-sent-notification', content)
+      io.emit('Server-sent-notification', {content: content})
       return res.json({msg: 'Send promotion success', content})
     } catch (error) {
       return res.status(500).json({ msg: error });
