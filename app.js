@@ -38,8 +38,7 @@ const connectDatabase = require('./config/db.config');
 connectDatabase();
 
 // =============== SOCKET.IO ==================
-
-global.onlineClients = new Set(); // list client online
+let onlineClients = new Set(); // list client online
 const io = socketio(server, {
   cors: {
     origin: '*',
@@ -47,7 +46,6 @@ const io = socketio(server, {
 });
 
 let countOnlineClients = 0;
-const getClientOnline = () => {onlineClients: onlineClients};
 io.on('connection', function (socket) {
   console.info(`Socket ${socket.id} has connected.`);
   onlineClients.add({socketId: socket.id, userId: ''});
@@ -83,7 +81,7 @@ io.on('connection', function (socket) {
   })
 })
 
-module.exports = {io, getClientOnline}
+module.exports = {io, onlineClients}
 
 
 // ================ ROUTE ===================
