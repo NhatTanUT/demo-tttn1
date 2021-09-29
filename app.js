@@ -76,7 +76,7 @@ io.on('connection', function (socket) {
   // })
 
   socket.on('Login', function (data) {
-    onlineClients.filter(e => {
+    onlineClients = onlineClients.filter(e => {
       return e.socketId !== socket.id
     })
     onlineClients.push({socketId: socket.id, userId: data})
