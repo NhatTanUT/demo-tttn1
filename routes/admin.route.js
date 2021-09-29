@@ -23,5 +23,6 @@ route.get('/order', AdminController.getAllOrder)
 route.post('/sendMailWishlist', AdminController.sendMailWishList)
 route.post('/sendPromotion', AdminController.sendPromotion)
 route.get('/clientOnline', AdminController.getAllClientOnline)
+route.post('/notify', AdminController.sendNotification)
 
 module.exports = route

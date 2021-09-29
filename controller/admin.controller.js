@@ -325,6 +325,23 @@ class AdminController {
       
     }
   }
+  async sendNotification(req, res) {
+    try {
+      const {listUser, content} = req.body
+      const listOnline = getClientOnline()
+      listUser.forEach(async (e) => {
+        const foundUser = listOnline.map((el) => el.userId === e)
+        if (foundUser) {
+          foundUser.map(e => {
+            io.to(e.userId).emit('Server-sent-notify', {content: content})
+          })
+        }
+      })
+      return 
+    } catch (error) {
+      return res.status(500).json({ msg: error });
+    }
+  }
 }
 
 module.exports = new AdminController();
