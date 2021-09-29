@@ -335,7 +335,7 @@ class AdminController {
         const foundUser = listOnline.filter((el) => {if (el.userId === e) return el})
         
         if (foundUser) {
-          foundUser.map(ell => {
+          foundUser.map(async (ell) => {
             io.to(ell.socketId).emit('Server-sent-notify', {content: content})
             await Users.updateOne({_id: mongoose.Types.ObjectId(ell.userId)}, {$push: {notification: {content: content, Date: Date()}}})
           })
