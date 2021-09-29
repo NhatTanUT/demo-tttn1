@@ -337,9 +337,9 @@ class AdminController {
         if (foundUser) {
           foundUser.map(async (ell) => {
             io.to(ell.socketId).emit('Server-sent-notify', {content: content})
-            await Users.updateOne({_id: mongoose.Types.ObjectId(ell.userId)}, {$push: {notification: {content: content, Date: Date()}}})
           })
         }
+        await Users.updateOne({_id: mongoose.Types.ObjectId(e)}, {$push: {notification: {content: content, Date: Date()}}})
       })
       return res.json({msg: "Send notification", listUser, content})
     } catch (error) {
