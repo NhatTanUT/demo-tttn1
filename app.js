@@ -39,7 +39,7 @@ connectDatabase();
 
 // =============== SOCKET.IO ==================
 
-global.onlineClients = []; // list client online
+global.onlineClients = new Set(); // list client online
 const io = socketio(server, {
   cors: {
     origin: '*',
