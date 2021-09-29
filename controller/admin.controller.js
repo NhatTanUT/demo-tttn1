@@ -333,8 +333,8 @@ class AdminController {
         const foundUser = listOnline.map((el) => el.userId === e)
         if (foundUser) {
           console.log(foundUser);
-          foundUser.map(e => {
-            io.to(e.userId).emit('Server-sent-notify', {content: content})
+          foundUser.map(ell => {
+            io.to(ell.socketId).emit('Server-sent-notify', {content: content})
           })
         }
       })
