@@ -319,7 +319,7 @@ class AdminController {
   async getAllClientOnline(req, res) {
     try {
       console.log(onlineClients);
-      // return res.json({client: onlineClients})
+      return res.json({client: onlineClients})
     } catch (error) {
       return res.status(500).json({ msg: error });
       
