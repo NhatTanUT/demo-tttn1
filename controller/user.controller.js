@@ -622,6 +622,16 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
+  async getNotification(req, res) {
+    try {
+      const id = req.user._id
+      const foundUser = await Users.findOne({_id: mongoose.Types.ObjectId(id)}, 'notification')
+
+      return res.json({...foundUser._doc})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
 }
 
 function createAccessToken(payload) {

@@ -339,7 +339,9 @@ class AdminController {
             io.to(ell.socketId).emit('Server-sent-notify', {content: content})
           })
         }
-        await Users.updateOne({_id: mongoose.Types.ObjectId(e)}, {$push: {notification: {content: content, Date: Date()}}})
+        await Users.updateOne({_id: mongoose.Types.ObjectId(e)}, {$push: {notification: {content: content, Date: Date().toLocaleString('en-US', {
+          timeZone: 'Asia/Ho_Chi_Minh'
+      })}}})
       })
       return res.json({msg: "Send notification", listUser, content})
     } catch (error) {

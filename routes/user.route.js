@@ -29,6 +29,7 @@ route.post('/upload', upload.single('img'), UserController.uploadFile)
 route.post('/addWishlist', auth, UserController.addWishlist)
 route.get('/wishlist', auth, UserController.getWishlist)
 route.post('/removeWishlist', auth, UserController.removeWishlist)
+route.get('/notification', auth, UserController.getNotification)
 route.get('/', (req, res) => {
     res.render('client')
 })
