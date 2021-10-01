@@ -34,6 +34,9 @@ const productSchema = new mongoose.Schema({
     }],
     "ventor": {
         type: String
+    },
+    "source": {
+        type: String
     }
 })
 

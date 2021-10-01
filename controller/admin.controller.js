@@ -348,6 +348,21 @@ class AdminController {
       return res.status(500).json({ msg: error });
     }
   }
+  async uploadRar(req, res) {
+    try {
+      const { idProduct } = req.body;
+      const source = "/uploads_rar/" + req.file.filename
+      await Product.updateOne({ _id: idProduct }, {$set: {source: source}});
+      
+      return res.json({
+        msg: "Add preview image success",
+        idProduct,
+        source,
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error });
+    }
+  }
 }
 
 module.exports = new AdminController();

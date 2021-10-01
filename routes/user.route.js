@@ -5,6 +5,10 @@ const UserController = require('../controller/user.controller');
 const auth = require('../middleware/auth')
 const upload = require('../middleware/upload')
 
+// route.get('/', (req, res) => {
+//     res.render('client')
+// })
+
 route.post('/register', UserController.register);
 route.post('/login', UserController.login);
 route.post('/logout', UserController.logout);
@@ -14,7 +18,7 @@ route.get('/product', UserController.getProducts);
 route.get('/product:productId', UserController.getProduct)
 route.get('/category', UserController.getCategories)
 route.get('/previewImage', UserController.getPreviewImage)
-route.post('/addOrder', UserController.addOrder);
+route.post('/addOrder', UserController.checkout, UserController.addOrder);
 route.get('/order', auth, UserController.getOrders)
 route.post('/resetPassword', UserController.sendResetPassword)
 route.get('/resetPassword/:id/:tokenResetPassword', UserController.getResetPassword)
@@ -30,8 +34,6 @@ route.post('/addWishlist', auth, UserController.addWishlist)
 route.get('/wishlist', auth, UserController.getWishlist)
 route.post('/removeWishlist', auth, UserController.removeWishlist)
 route.get('/notification', auth, UserController.getNotification)
-route.get('/', (req, res) => {
-    res.render('client')
-})
+route.get('/download/:idUser/:idProduct', UserController.downloadSource)
 
 module.exports = route;

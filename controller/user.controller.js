@@ -5,6 +5,10 @@ const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 
+const fs = require('fs')
+const path = require('path')
+
+const download = require('download');
 const mailer = require("../utils/mailer");
 const brcypt = require("bcrypt");
 const mongoose = require("mongoose");
@@ -241,6 +245,7 @@ class UserController {
 
       return res.json({ msg: "Add order success", order: newOrder });
     } catch (error) {
+      console.log(error.message);
       return res.status(500).json({ msg: error.message });
     }
   }
@@ -473,7 +478,7 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
-  async checkout(req, res) {
+  async checkout(req, res, next) {
     try {
       const {
         email,
@@ -483,16 +488,9 @@ class UserController {
         number,
         exp_month,
         exp_year,
-        cvc,
-        company,
-        address,
-        apartment,
-        city,
-        country,
-        postalCode,
-        phone,
+        cvc
       } = req.body;
-      const id = req.user._id;
+      // const id = req.user._id;
 
       const customer = await stripe.customers.create({
         email: email,
@@ -521,9 +519,12 @@ class UserController {
         currency: "usd",
         source: token.id,
       });
-      console.log(charge);
-      return res.json({ msg: "Success" });
+      // console.log(charge);
+
+    
+      next()
     } catch (error) {
+      console.log(error.message);
       return res.status(500).json({ msg: error.message });
     }
   }
@@ -630,6 +631,25 @@ class UserController {
       return res.json({...foundUser._doc})
     } catch (error) {
       return res.status(500).json({ msg: error.message });
+    }
+  }
+  async downloadSource(req, res) {
+    try {
+      const {idUser, idProduct} = req.params
+      const foundOrder = await Order.findOne({idUser: mongoose.Types.ObjectId(idUser), "OrderItems.idProduct": mongoose.Types.ObjectId(idProduct)})
+      if (foundOrder) {
+        const foundProduct = await Product.findOne({_id: mongoose.Types.ObjectId(idProduct)}, "source")
+        if (foundProduct) {
+          const dir = path.dirname(require.main.filename);
+          const filePath = path.join(dir + foundProduct.source)
+          const file = foundProduct.source.split('/')[foundProduct.source.split('/').length - 1]
+
+          return res.download(filePath, file);        
+        }
+      }
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
     }
   }
 }
