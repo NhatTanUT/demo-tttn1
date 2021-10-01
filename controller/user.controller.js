@@ -201,6 +201,159 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
+  async sendMailOrder(newOrder) {
+    try {
+      const subject = "Checkout Order " + newOrder._id + " Success"
+      const to = newOrder.email
+      
+      const listProduct = []
+      listProduct = newOrder.OrderItems.map(async (el) => {
+        const found = await Product.findOne({_id: mongoose.Types.ObjectId(el.idProduct)}, "name img").lean()
+        return {...found._doc, quantity: el.quantity, price: el.price}
+      })
+      console.log(listProduct);
+      let body = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+          <head>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+              <title>Email Template for Order Confirmation Email</title>
+              
+              <!-- Start Common CSS -->
+              <style type="text/css">
+                  #outlook a {padding:0;}
+                  body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0; font-family: Helvetica, arial, sans-serif;}
+                  .ExternalClass {width:100%;}
+                  .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
+                  .backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+                  .main-temp table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; font-family: Helvetica, arial, sans-serif;}
+                  .main-temp table td {border-collapse: collapse;}
+              </style>
+              <!-- End Common CSS -->
+          </head>
+          <body>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" class="backgroundTable main-temp" style="background-color: #d5d5d5;">
+                  <tbody>
+                      <tr>
+                          <td>
+                              <table width="600" align="center" cellpadding="15" cellspacing="0" border="0" class="devicewidth" style="background-color: #ffffff;">
+                                  <tbody>
+                                      <!-- Start header Section -->
+                                      <tr>
+                                          <td style="padding-top: 30px;">
+                                          <img style="height: 100px; width: auto" src="https://s3.amazonaws.com/tropicultmedia/media/2019/07/Emails.png" alt="Product Image" />
+                                          OrderNumber: #${newOrder._id}
+                                          </td>
+                                      </tr>
+                                      <!-- End header Section -->
+                                      
+                                      <!-- Start address Section -->
+                                      <tr>
+                                          <td style="padding-top: 0;">
+                                              <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #bbbbbb;">
+                                                  <tbody>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                            Billing  Adderss
+                                                          </td>
+                                                          
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                              Fullname: ${newOrder.firstName} ${newOrder.lastName}
+                                                          </td>
+                                    
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                              Address: ${newOrder.address}
+                                                          </td>
+                                                          
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                            ${newOrder.city}, ${newOrder.postalCode}
+                                                          </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                            Phonenumber: ${newOrder.phone}
+                                                          </td>
+                                                      </tr>
+                                                  </tbody>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                      <!-- End address Section -->
+                                      
+                                      <!-- Start product Section -->`
+                                      
+      listProduct.map(el => {
+        body += `<tr>
+        <td style="padding-top: 0;">
+            <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #eeeeee;">
+                <tbody>
+                <tr>
+        <td rowspan="4" style="padding-right: 10px; padding-bottom: 10px;">
+            <img style="height: 80px;" src=${el.img} alt="Product Image" />
+        </td>
+        <td colspan="2" style="font-size: 14px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+            ${el.name}
+        </td>
+    </tr>
+    <tr>
+        <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
+            rate: ${el.quantity}
+        </td>
+        <td style="width: 130px;"></td>
+    </tr>
+    <tr>
+        <td style="font-size: 14px; line-height: 18px; color: #757575;">
+            Description: ${el.price}
+        </td>
+        
+    </tr></tbody>
+    </table>
+</td>`
+    
+      })   
+      body += `
+</tr>
+
+<!-- End product Section -->
+
+<!-- Start calculation Section -->
+
+<!-- End calculation Section -->
+
+<!-- Start payment method Section -->
+<tr>
+  <td style="padding: 0 10px;">
+      <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+          <tbody>
+              
+              <tr>
+                  <td colspan="2" style="width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 600; color: #666666; padding: 15px 0; border-top: 1px solid #eeeeee;">
+                      <b style="font-size: 14px;">Note:</b> Shop bán theme và template siêu cấp vip pro :v
+                  </td>
+              </tr>
+          </tbody>
+      </table>
+  </td>
+</tr>
+<!-- End payment method Section -->
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>`                                           
+      await mailer.sendMail(to, subject, body)
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   async addOrder(req, res) {
     try {
       const {
@@ -241,8 +394,9 @@ class UserController {
         phone,
       });
 
-      await newOrder.save();
+      newOrder.save()
 
+      
       return res.json({ msg: "Add order success", order: newOrder });
     } catch (error) {
       console.log(error.message);
@@ -274,7 +428,7 @@ class UserController {
         id: foundUser._id,
       };
 
-      const token = jwt.sign(payload, secret, { expiresIn: "15m" });
+      const token = jwt.sign(payload, secret, { expiresIn: "1s" });
 
       const link =
         process.env.HOST_WEB + "resetPassword/" + foundUser._id + "/" + token;
@@ -656,7 +810,7 @@ class UserController {
 
 function createAccessToken(payload) {
   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "1s",
   });
 }
 
