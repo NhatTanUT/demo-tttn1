@@ -428,7 +428,7 @@ class UserController {
         id: foundUser._id,
       };
 
-      const token = jwt.sign(payload, secret, { expiresIn: "1s" });
+      const token = jwt.sign(payload, secret, { expiresIn: "15m" });
 
       const link =
         process.env.HOST_WEB + "resetPassword/" + foundUser._id + "/" + token;
@@ -810,7 +810,7 @@ class UserController {
 
 function createAccessToken(payload) {
   return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "1s",
+    expiresIn: "1d",
   });
 }
 
