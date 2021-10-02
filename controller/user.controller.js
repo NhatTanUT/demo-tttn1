@@ -59,15 +59,16 @@ class UserController {
 
       await newUser.save();
 
-      res.cookie("refresh_token", refresh_token, {
-        httpOnly: true,
-        path: "/refresh_token",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      });
+      // res.cookie("refresh_token", refresh_token, {
+      //   httpOnly: true,
+      //   path: "/refresh_token",
+      //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      // });
 
       return res.json({
         msg: "Register Success! ",
         access_token,
+        refresh_token,
         user: {
           ...newUser._doc,
           password: "",
@@ -93,15 +94,16 @@ class UserController {
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });
 
-      res.cookie("refresh_token", refresh_token, {
-        httpOnly: true,
-        path: "/refresh_token",
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
-      });
+      // res.cookie("refresh_token", refresh_token, {
+      //   httpOnly: true,
+      //   path: "/refresh_token",
+      //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
+      // });
 
       return res.json({
         msg: "Login Success!",
         access_token,
+        refresh_token,
         user: {
           ...user._doc,
           password: "",
@@ -121,12 +123,12 @@ class UserController {
   }
   async getAccessToken(req, res) {
     try {
-      const refresh_token = req.cookies.refresh_token;
-      if (!refresh_token)
+      const {refreshToken} = req.body;
+      if (!refreshToken)
         return res.status(400).json({ msg: "Please login now." });
 
       jwt.verify(
-        refresh_token,
+        refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         async (err, result) => {
           if (err) return res.status(400).json({ msg: "Please login now." });
