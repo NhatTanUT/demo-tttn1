@@ -73,11 +73,11 @@ io.on('connection', function (socket) {
     console.log('Count Online Client: ' + countOnlineClients);
   })
 
-  // socket.on('Admin-sent-notification', function (data) {
-  //   socket.broadcast.emit('Server-sent-notification', {
-  //     content: data.content
-  //   })
-  // })
+  socket.on('Admin-sent-notification', function (data) {
+    socket.broadcast.emit('Server-sent-notification', {
+      content: data.content
+    })
+  })
 
   socket.on('Login', function (data) {
     onlineClients = onlineClients.filter(e => {

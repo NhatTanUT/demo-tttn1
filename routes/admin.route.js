@@ -9,9 +9,9 @@ const upload_rar = require('../middleware/upload_rar')
 const AdminController = require('../controller/admin.controller')
 const UserController = require('../controller/user.controller')
 
-// route.get('/', (req, res) => {
-//     res.render('admin')
-// })
+route.get('/', (req, res) => {
+    res.render('admin')
+})
 
 route.post('/register', UserController.register)
 route.post('/previewImg', upload.array('img', 10), AdminController.addPreview)
@@ -25,6 +25,8 @@ route.post('/sendMailWishlist', AdminController.sendMailWishList)
 route.post('/sendPromotion', AdminController.sendPromotion)
 route.get('/clientOnline', AdminController.getAllClientOnline)
 route.post('/notify', AdminController.sendNotification)
+route.post('/notify_banner', AdminController.sendNotificationBanner)
+// route.post('/removeNotify', AdminController.removeNotify)
 route.post('/uploadrar', upload_rar.single('file'), AdminController.uploadRar)
 
 module.exports = route

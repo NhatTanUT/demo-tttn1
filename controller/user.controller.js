@@ -761,9 +761,9 @@ class UserController {
   async getWishlist(req, res) {
     try {
       const id = req.user._id
-      const foundUser = await Users.findOne({_id: id}, 'wishlist').populate('wishlist')
+      const foundUser = await Users.findOne({_id: id}, 'wishlist').populate('wishlist').lean()
       
-      return res.json({...foundUser._doc})
+      return res.json({...foundUser})
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

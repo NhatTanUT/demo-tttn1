@@ -348,6 +348,27 @@ class AdminController {
       return res.status(500).json({ msg: error });
     }
   }
+  async sendNotificationBanner(req, res) {
+    try {
+      const {content} = req.body
+      io.emit('Server-sent-notification', {
+            content: content
+          })
+      return res.json({msg: "Send notification", content})
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ msg: error });
+      
+    }
+  }
+  // async removeNotify(req, res) {
+  //   try {
+      
+  //   } catch (error) {
+  //     return res.status(500).json({ msg: error });
+      
+  //   }
+  // }
   async uploadRar(req, res) {
     try {
       const { idProduct } = req.body;
