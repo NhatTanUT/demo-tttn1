@@ -5,22 +5,29 @@ const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 
-const fs = require('fs')
-const path = require('path')
+const fs = require("fs");
+const path = require("path");
 
-const download = require('download');
+const download = require("download");
 const mailer = require("../utils/mailer");
 const brcypt = require("bcrypt");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const stripe = require("stripe")(
-  process.env.STRIPE_KEY
-);
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 class UserController {
   async register(req, res) {
     try {
-      const { email, password, firstName, lastName, role, gender, DOB, phonenumber } = req.body;
+      const {
+        email,
+        password,
+        firstName,
+        lastName,
+        role,
+        gender,
+        DOB,
+        phonenumber,
+      } = req.body;
       // let newEmail = email.toLowerCase() // /g replace remove first element. /g to remove all (purpose: remove space)
 
       const foundEmail = await Users.findOne({ email: email });
@@ -51,7 +58,7 @@ class UserController {
         role: role1,
         DOB,
         gender,
-        phonenumber
+        phonenumber,
       });
 
       const access_token = createAccessToken({ id: newUser._id });
@@ -123,7 +130,7 @@ class UserController {
   }
   async getAccessToken(req, res) {
     try {
-      const {refreshToken} = req.body;
+      const { refreshToken } = req.body;
       if (!refreshToken)
         return res.status(400).json({ msg: "Please login now." });
 
@@ -203,17 +210,14 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
-  async sendMailOrder(newOrder) {
+  async sendMailOrder(req, res) {
     try {
-      const subject = "Checkout Order " + newOrder._id + " Success"
-      const to = newOrder.email
+      if (!res.locals.newOrder) console.log("Error") 
+      const newOrder = res.locals.newOrder
       
-      const listProduct = []
-      listProduct = newOrder.OrderItems.map(async (el) => {
-        const found = await Product.findOne({_id: mongoose.Types.ObjectId(el.idProduct)}, "name img").lean()
-        return {...found._doc, quantity: el.quantity, price: el.price}
-      })
-      console.log(listProduct);
+      const subject = "Checkout Order #" + newOrder._id + " success";
+      const to = newOrder.email;
+
       let body = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
       <html xmlns="http://www.w3.org/1999/xhtml">
           <head>
@@ -242,7 +246,6 @@ class UserController {
                                       <!-- Start header Section -->
                                       <tr>
                                           <td style="padding-top: 30px;">
-                                          <img style="height: 100px; width: auto" src="https://s3.amazonaws.com/tropicultmedia/media/2019/07/Emails.png" alt="Product Image" />
                                           OrderNumber: #${newOrder._id}
                                           </td>
                                       </tr>
@@ -287,76 +290,175 @@ class UserController {
                                       </tr>
                                       <!-- End address Section -->
                                       
-                                      <!-- Start product Section -->`
-                                      
-      listProduct.map(el => {
+                                      <!-- Start product Section -->`;
+
+      for (const el of newOrder.OrderItems) {
+        const found = await Product.findOne(
+          { _id: mongoose.Types.ObjectId(el.idProduct) },
+          "title img"
+        );
         body += `<tr>
         <td style="padding-top: 0;">
             <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #eeeeee;">
                 <tbody>
                 <tr>
         <td rowspan="4" style="padding-right: 10px; padding-bottom: 10px;">
-            <img style="height: 80px;" src=${el.img} alt="Product Image" />
+            <img style="height: 80px;" src=${found.img} alt="Product Image" />
         </td>
         <td colspan="2" style="font-size: 14px; font-weight: bold; color: #666666; padding-bottom: 5px;">
-            ${el.name}
+            ${found.title}
         </td>
     </tr>
     <tr>
         <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
-            rate: ${el.quantity}
+            Rate: ${el.quantity}
         </td>
         <td style="width: 130px;"></td>
     </tr>
     <tr>
         <td style="font-size: 14px; line-height: 18px; color: #757575;">
-            Description: ${el.price}
+            Price: ${el.price}
         </td>
         
-    </tr></tbody>
+    </tr>
+    <tr>
+        <td style="font-size: 14px; line-height: 18px; color: #757575;">
+            <a href="${process.env.HOST_WEB}${newOrder.idUser}/${el._id}">Download</a>
+        </td>
+        
+    </tr>
+    </tbody>
     </table>
-</td>`
-    
-      })   
-      body += `
-</tr>
+</td>`;
+      }
 
-<!-- End product Section -->
-
-<!-- Start calculation Section -->
-
-<!-- End calculation Section -->
-
-<!-- Start payment method Section -->
-<tr>
-  <td style="padding: 0 10px;">
-      <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
-          <tbody>
-              
-              <tr>
-                  <td colspan="2" style="width: 100%; text-align: center; font-style: italic; font-size: 13px; font-weight: 600; color: #666666; padding: 15px 0; border-top: 1px solid #eeeeee;">
-                      <b style="font-size: 14px;">Note:</b> Shop bán theme và template siêu cấp vip pro :v
-                  </td>
-              </tr>
-          </tbody>
-      </table>
-  </td>
-</tr>
-<!-- End payment method Section -->
-</tbody>
-</table>
-</td>
-</tr>
-</tbody>
-</table>
-</body>
-</html>`                                           
-      await mailer.sendMail(to, subject, body)
+      await mailer.sendMail(to, subject, body); 
+      // ##############################################
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
+      return res.status(500).json({ msg: error.message });
     }
   }
-  async addOrder(req, res) {
+  async getOrders(req, res) {
+    try {
+      const id = req.user._id;
+      const orders = await Order.find({ idUser: id }).lean();
+
+      res.json(orders);
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async sendResetPassword(req, res) {
+    try {
+      const { email } = req.body;
+
+      const foundUser = await Users.findOne({ email: email }).lean();
+      if (!foundUser) {
+        return res.status(500).json({ msg: "Not found email!" });
+      }
+
+      const secret = process.env.RESET_TOKEN_SECRET + foundUser.password;
+      const payload = {
+        email: foundUser.email,
+        id: foundUser._id,
+      };
+
+      const token = jwt.sign(payload, secret, { expiresIn: "15m" });
+
+      const link =
+        process.env.HOST_WEB + "resetPassword/" + foundUser._id + "/" + token;
+
+      const to = foundUser.email;
+      const subject = "Reset password";
+      const body = `
+      <!doctype html>
+      <html lang="en-US">
+      
+      <head>
+          <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+          <title>Reset Password Email Template</title>
+          <meta name="description" content="Reset Password Email Template.">
+          <style type="text/css">
+              a:hover {text-decoration: underline !important;}
+          </style>
+      </head>
+      
+      <body marginheight="0" topmargin="0" marginwidth="0" style="margin: 0px; background-color: #f2f3f8;" leftmargin="0">
+          <!--100% body table-->
+          <table cellspacing="0" border="0" cellpadding="0" width="100%" bgcolor="#f2f3f8"
+              style="@import url(https://fonts.googleapis.com/css?family=Rubik:300,400,500,700|Open+Sans:300,400,600,700); font-family: 'Open Sans', sans-serif;">
+              <tr>
+                  <td>
+                      <table style="background-color: #f2f3f8; max-width:670px;  margin:0 auto;" width="100%" border="0"
+                          align="center" cellpadding="0" cellspacing="0">
+                          <tr>
+                              <td style="height:80px;">&nbsp;</td>
+                          </tr>
+                          <tr>
+                              <td style="text-align:center;">
+                                <a href="https://web-demo.online" title="logo" target="_blank">
+                                  <i class="fas fa-fire"></i>
+                                </a>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td style="height:20px;">&nbsp;</td>
+                          </tr>
+                          <tr>
+                              <td>
+                                  <table width="95%" border="0" align="center" cellpadding="0" cellspacing="0"
+                                      style="max-width:670px;background:#fff; border-radius:3px; text-align:center;-webkit-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);-moz-box-shadow:0 6px 18px 0 rgba(0,0,0,.06);box-shadow:0 6px 18px 0 rgba(0,0,0,.06);">
+                                      <tr>
+                                          <td style="height:40px;">&nbsp;</td>
+                                      </tr>
+                                      <tr>
+                                          <td style="padding:0 35px;">
+                                              <h1 style="color:#1e1e2d; font-weight:500; margin:0;font-size:32px;font-family:'Rubik',sans-serif;">You have
+                                                  requested to reset your password</h1>
+                                              <span
+                                                  style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
+                                              <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
+                                                  We cannot simply send you your old password. A unique link to reset your
+                                                  password has been generated for you. To reset your password, click the
+                                                  following link and follow the instructions.
+                                              </p>
+                                              <a href="${link}"
+                                                  style="background:#20e277;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Reset
+                                                  Password</a>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td style="height:40px;">&nbsp;</td>
+                                      </tr>
+                                  </table>
+                              </td>
+                          <tr>
+                              <td style="height:20px;">&nbsp;</td>
+                          </tr>
+                          <tr>
+                              <td style="text-align:center;">
+                                  <p style="font-size:14px; color:rgba(69, 80, 86, 0.7411764705882353); line-height:18px; margin:0 0 0;">&copy; <strong>No Copyright@2021</strong></p>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td style="height:80px;">&nbsp;</td>
+                          </tr>
+                      </table>
+                  </td>
+              </tr>
+          </table>
+          <!--/100% body table-->
+      </body>
+      
+      </html>`;
+
+      await mailer.sendMail(to, subject, body);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async addOrder(req, res, next) {
     try {
       const {
         orderItems,
@@ -396,12 +498,127 @@ class UserController {
         phone,
       });
 
-      newOrder.save()
-
+      newOrder.save();
       
-      return res.json({ msg: "Add order success", order: newOrder });
+      // Send mail ############################################################################3
+      /* const subject = "Checkout Order #" + newOrder._id + " success";
+      const to = newOrder.email;
+
+      let body = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml">
+          <head>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+              <title>Email Template for Order Confirmation Email</title>
+              
+              <!-- Start Common CSS -->
+              <style type="text/css">
+                  #outlook a {padding:0;}
+                  body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0; font-family: Helvetica, arial, sans-serif;}
+                  .ExternalClass {width:100%;}
+                  .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
+                  .backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+                  .main-temp table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; font-family: Helvetica, arial, sans-serif;}
+                  .main-temp table td {border-collapse: collapse;}
+              </style>
+              <!-- End Common CSS -->
+          </head>
+          <body>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" class="backgroundTable main-temp" style="background-color: #d5d5d5;">
+                  <tbody>
+                      <tr>
+                          <td>
+                              <table width="600" align="center" cellpadding="15" cellspacing="0" border="0" class="devicewidth" style="background-color: #ffffff;">
+                                  <tbody>
+                                      <!-- Start header Section -->
+                                      <tr>
+                                          <td style="padding-top: 30px;">
+                                          OrderNumber: #${newOrder._id}
+                                          </td>
+                                      </tr>
+                                      <!-- End header Section -->
+                                      
+                                      <!-- Start address Section -->
+                                      <tr>
+                                          <td style="padding-top: 0;">
+                                              <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #bbbbbb;">
+                                                  <tbody>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                                            Billing  Adderss
+                                                          </td>
+                                                          
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                              Fullname: ${newOrder.firstName} ${newOrder.lastName}
+                                                          </td>
+                                    
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
+                                                              Address: ${newOrder.address}
+                                                          </td>
+                                                          
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                            ${newOrder.city}, ${newOrder.postalCode}
+                                                          </td>
+                                                      </tr>
+                                                      <tr>
+                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                                            Phonenumber: ${newOrder.phone}
+                                                          </td>
+                                                      </tr>
+                                                  </tbody>
+                                              </table>
+                                          </td>
+                                      </tr>
+                                      <!-- End address Section -->
+                                      
+                                      <!-- Start product Section -->`;
+
+      for (const el of newOrder.OrderItems) {
+        const found = await Product.findOne(
+          { _id: mongoose.Types.ObjectId(el.idProduct) },
+          "title img"
+        );
+        body += `<tr>
+        <td style="padding-top: 0;">
+            <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #eeeeee;">
+                <tbody>
+                <tr>
+        <td rowspan="4" style="padding-right: 10px; padding-bottom: 10px;">
+            <img style="height: 80px;" src=${found.img} alt="Product Image" />
+        </td>
+        <td colspan="2" style="font-size: 14px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+            ${found.title}
+        </td>
+    </tr>
+    <tr>
+        <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
+            rate: ${el.quantity}
+        </td>
+        <td style="width: 130px;"></td>
+    </tr>
+    <tr>
+        <td style="font-size: 14px; line-height: 18px; color: #757575;">
+            Description: ${el.price}
+        </td>
+        
+    </tr></tbody>
+    </table>
+</td>`;
+      }
+
+      await mailer.sendMail(to, subject, body);*/
+      // ##############################################
+
+      res.locals.newOrder = newOrder
+      res.json({ msg: "Add order success", order: newOrder });
+      next()
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
       return res.status(500).json({ msg: error.message });
     }
   }
@@ -644,7 +861,7 @@ class UserController {
         number,
         exp_month,
         exp_year,
-        cvc
+        cvc,
       } = req.body;
       // const id = req.user._id;
 
@@ -677,8 +894,7 @@ class UserController {
       });
       // console.log(charge);
 
-    
-      next()
+      next();
     } catch (error) {
       console.log(error.message);
       return res.status(500).json({ msg: error.message });
@@ -703,7 +919,7 @@ class UserController {
             lastName,
             phonenumber,
             gender,
-            DOB
+            DOB,
           },
         }
       );
@@ -745,67 +961,92 @@ class UserController {
   }
   async addWishlist(req, res) {
     try {
-      const id = req.user._id
-      const {idProduct} = req.body
+      const id = req.user._id;
+      const { idProduct } = req.body;
 
-      const foundUser = await Users.updateOne({_id: id}, {$addToSet: {wishlist: idProduct}})
+      const foundUser = await Users.updateOne(
+        { _id: id },
+        { $addToSet: { wishlist: idProduct } }
+      );
       if (foundUser.modifiedCount === 0) {
-        return res.status(500).json({msg: 'Product already exists in wishlist', id, idProduct})
+        return res
+          .status(500)
+          .json({ msg: "Product already exists in wishlist", id, idProduct });
       }
 
-      return res.json({msg: 'Add wishlist success', id, idProduct})
+      return res.json({ msg: "Add wishlist success", id, idProduct });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async getWishlist(req, res) {
     try {
-      const id = req.user._id
-      const foundUser = await Users.findOne({_id: id}, 'wishlist').populate('wishlist').lean()
-      
-      return res.json({...foundUser})
+      const id = req.user._id;
+      const foundUser = await Users.findOne({ _id: id }, "wishlist")
+        .populate("wishlist")
+        .lean();
+
+      return res.json({ ...foundUser });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async removeWishlist(req, res) {
     try {
-      const id = req.user._id
-      const {idProduct} = req.body
+      const id = req.user._id;
+      const { idProduct } = req.body;
 
-      await Users.updateOne({_id: id}, {$pull: {wishlist: mongoose.Types.ObjectId(idProduct)}})
-      return res.json({msg: "Remove product from wishlist success", id, idProduct})
+      await Users.updateOne(
+        { _id: id },
+        { $pull: { wishlist: mongoose.Types.ObjectId(idProduct) } }
+      );
+      return res.json({
+        msg: "Remove product from wishlist success",
+        id,
+        idProduct,
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async getNotification(req, res) {
     try {
-      const id = req.user._id
-      const foundUser = await Users.findOne({_id: mongoose.Types.ObjectId(id)}, 'notification')
+      const id = req.user._id;
+      const foundUser = await Users.findOne(
+        { _id: mongoose.Types.ObjectId(id) },
+        "notification"
+      );
 
-      return res.json({...foundUser._doc})
+      return res.json({ ...foundUser._doc });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async downloadSource(req, res) {
     try {
-      const {idUser, idProduct} = req.params
-      const foundOrder = await Order.findOne({idUser: mongoose.Types.ObjectId(idUser), "OrderItems.idProduct": mongoose.Types.ObjectId(idProduct)})
+      const { idUser, idProduct } = req.params;
+      const foundOrder = await Order.findOne({
+        idUser: mongoose.Types.ObjectId(idUser),
+        "OrderItems.idProduct": mongoose.Types.ObjectId(idProduct),
+      });
       if (foundOrder) {
-        const foundProduct = await Product.findOne({_id: mongoose.Types.ObjectId(idProduct)}, "source")
+        const foundProduct = await Product.findOne(
+          { _id: mongoose.Types.ObjectId(idProduct) },
+          "source"
+        );
         if (foundProduct) {
           const dir = path.dirname(require.main.filename);
-          const filePath = path.join(dir + foundProduct.source)
-          const file = foundProduct.source.split('/')[foundProduct.source.split('/').length - 1]
+          const filePath = path.join(dir + foundProduct.source);
+          const file =
+            foundProduct.source.split("/")[
+              foundProduct.source.split("/").length - 1
+            ];
 
-          return res.download(filePath, file);        
+          return res.download(filePath, file);
         }
       }
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
 }

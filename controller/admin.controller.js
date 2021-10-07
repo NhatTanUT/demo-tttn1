@@ -73,8 +73,8 @@ class AdminController {
   }
   async updateProduct(req, res) {
     try {
-      const idProduct = req.params.idProduct
-      const update = req.body
+      const {idProduct, update} = req.body
+     
       
       const foundProduct = await Product.updateOne({_id: mongoose.Types.ObjectId(idProduct)}, {$set: update})
       
@@ -85,8 +85,7 @@ class AdminController {
   }
   async updateCategory(req, res) {
     try {
-      const {idCategory} = req.params
-      const update = req.body
+      const {idCategory, update} = req.body
 
       await Product.updateOne({_id: mongoose.Types.ObjectId(idCategory)}, {$set: update})
       
