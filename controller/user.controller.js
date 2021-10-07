@@ -323,7 +323,7 @@ class UserController {
     </tr>
     <tr>
         <td style="font-size: 14px; line-height: 18px; color: #757575;">
-            <a href="/download/${process.env.HOST_WEB}${newOrder.idUser}/${el.idProduct}">Download</a>
+            <a href="${process.env.HOST_WEB}download/${newOrder.idUser}/${el.idProduct}">Download</a>
         </td>
         
     </tr>
