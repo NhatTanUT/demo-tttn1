@@ -16,3 +16,111 @@ content-type: application/json
     "content": "Hello"
 
 }
+
+###
+PATCH http://localhost:3000/admin/product
+Content-Type: application/json
+
+{
+    "idProduct": "611e71cf37725149c830aa05",
+    "update": {
+        "quantity": 10
+    }
+}
+
+###
+PATCH http://localhost:3000/admin/category
+Content-Type: application/json
+
+{
+    "idCategory": "6160158b0435705dbe1464c7",
+    "update": {
+        "id": "c6",
+        "products": [ 
+            "611ca9d835f54f93292951c6"
+        ],
+        "category": "demo1"
+    }
+}
+
+###
+POST http://localhost:3000/admin/category
+Content-Type: application/json
+
+{
+    "id": "c5",
+    "products": [ 
+        "611ca9d835f54f93292951c6", 
+        "61125d66516b371f38dc1b40"
+        
+    ],
+    "category": "demo"
+}
+
+###
+POST http://localhost:3000/admin/product
+Content-Type: application/json
+
+{
+    "id" : "31",
+    "img" : "https://cdn.shopify.com/s/files/1/2695/0984/products/materio-free-banner.png?v=1629437936",
+    "title" : "demo",
+    "rate" : "4.7",
+    "price" : 0,
+    "description" : "demo",
+    "ventor" : "demo",
+    "category" : "Free",
+    "quantity" : 10,
+    "category" : "FREE"
+}
+
+###
+DELETE http://localhost:3000/admin/category
+Content-Type: application/json
+
+{
+    "idCategory": "6160158b0435705dbe1464c7"
+}
+
+###
+DELETE http://localhost:3000/admin/product
+Content-Type: application/json
+
+{
+    "idProduct": "61601491e5599702fd7daf41"
+}
+
+###
+PATCH http://localhost:3000/admin/user
+Content-Type: application/json
+
+{
+    "idUser": "61517839ac39ee8974e1cf59",
+    "update": {
+        "email" : "A van teo",
+    "firstName" : "asfasfasfasfsa",
+    "lastName" : "sdgsdgsdgsdgsdgsd",
+    "status" : "Active",
+    "gender" : "Male",
+    "phonenumber" : "1572727",
+    "role" : "User",
+    "wishlist" : [],
+    "cart" : ["dfsdfsdfd"]
+    }
+}
+
+###
+DELETE http://localhost:3000/admin/user
+Content-Type: application/json
+
+{
+    "idUser": "61517839ac39ee8974e0cf59"
+}
+
+###
+DELETE http://localhost:3000/admin/order
+Content-Type: application/json
+
+{
+    "idOrder": "615e654ea5b3077a793fb07c"
+}

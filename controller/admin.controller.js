@@ -35,63 +35,71 @@ class AdminController {
         previewImg: foundProduct.previewImage,
       });
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
     }
   }
 
   async addProduct(req, res) {
     try {
+      const update = req.body
+      if (req.file) {
+        update.img = process.env.HOST_WEB + "uploads/" + req.file.filename
+      }
       let newProduct = new Product({
-        id: req.body.id,
-        img: process.env.HOST_WEB + "uploads/" + req.file.filename,
-        title: req.body.title,
-        rate: req.body.rate,
-        price: req.body.price,
-        description: req.body.description,
-        quantity: req.body.quantity,
-        category: req.body.category,
+        ...update
+        // id: req.body.id,
+        // img: process.env.HOST_WEB + "uploads/" + req.file.filename,
+        // title: req.body.title,
+        // rate: req.body.rate,
+        // price: req.body.price,
+        // description: req.body.description,
+        // quantity: req.body.quantity,
+        // category: req.body.category,
       });
       await newProduct.save();
       return res.json({msg: 'Add product success', product: newProduct})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      console.log(error);
+      return res.status(500).json({ msg: error.message });
     }
   }
 
   async addCategory(req, res) {
     try {
+      const {id, products, name} = req.body
       let newCategory = new Category({
-        id: req.body.id,
-        products: req.body.products,
-        category: req.body.category,
+        id,
+        products,
+        name
       });
 
-      newCategory.save();
+      await newCategory.save();
+      return res.json({msg: "Add category success", id, products, name})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      console.log(error);
+      return res.status(500).json({ msg: error.message });
     }
   }
   async updateProduct(req, res) {
     try {
       const {idProduct, update} = req.body
      
-      
       const foundProduct = await Product.updateOne({_id: mongoose.Types.ObjectId(idProduct)}, {$set: update})
       
       return res.json({msg: "Update product success", idProduct, update})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
     }
   }
   async updateCategory(req, res) {
     try {
       const {idCategory, update} = req.body
-
-      await Product.updateOne({_id: mongoose.Types.ObjectId(idCategory)}, {$set: update})
+      
+      await Category.updateOne({_id: mongoose.Types.ObjectId(idCategory)}, {$set: {...update}})
       
       return res.json({msg: "Update category success", idCategory, update})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
     }
   }
   async getAllUser(req, res) {
@@ -100,7 +108,7 @@ class AdminController {
   
       return res.json({ allUser });
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
     }
   }
   async getAllOrder(req, res) {
@@ -109,7 +117,7 @@ class AdminController {
 
       return res.json({allOrder})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
     }
   }
   async sendMailWishList(req, res) {
@@ -302,7 +310,7 @@ class AdminController {
       
       return res.json({msg: "Send Mail WishList", foundWishlist, foundProduct})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
       
     }
   }
@@ -313,7 +321,7 @@ class AdminController {
       io.emit('Server-sent-notification', {content: content})
       return res.json({msg: 'Send promotion success', content})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
     }
   }
   async getAllClientOnline(req, res) {
@@ -321,7 +329,7 @@ class AdminController {
       const list = getClientOnline()
       return res.json({client: list})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
       
     }
   }
@@ -344,7 +352,7 @@ class AdminController {
       })
       return res.json({msg: "Send notification", listUser, content})
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
     }
   }
   async sendNotificationBanner(req, res) {
@@ -356,7 +364,7 @@ class AdminController {
       return res.json({msg: "Send notification", content})
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
       
     }
   }
@@ -364,7 +372,7 @@ class AdminController {
   //   try {
       
   //   } catch (error) {
-  //     return res.status(500).json({ msg: error });
+  //     return res.status(500).json({ msg: error.message });
       
   //   }
   // }
@@ -380,7 +388,87 @@ class AdminController {
         source,
       });
     } catch (error) {
-      return res.status(500).json({ msg: error });
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async removeProduct(req, res) {
+    try {
+      const {idProduct} = req.body
+      const foundProduct = await Product.deleteOne({_id: mongoose.Types.ObjectId(idProduct)})
+      if (foundProduct.deletedCount === 1)
+        return res.json({msg: "Delete productId #" + idProduct + " success"})
+      else {
+        return res.status(500).json({ msg: "Can't find productid" });
+      }
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async removeCategory(req, res) {
+    try {
+      const {idCategory} = req.body
+      const foundCategory = await Category.deleteOne({_id: mongoose.Types.ObjectId(idCategory)})
+      if (foundCategory.deletedCount === 1)
+        return res.json({msg: "Delete category #" + idCategory + " success"})
+      else {
+        return res.status(500).json({ msg: "Can't find categoryid" });
+      }
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async updateUser(req, res) {
+    try {
+      const {idUser, update} = req.body
+
+      delete update.password
+      delete update._id
+      delete update.wishlist
+      delete update.cart
+      delete update.notification
+      delete update.role
+      delete update.status
+
+      const foundUser = await Users.updateOne({_id: mongoose.Types.ObjectId(idUser)}, {$set: update})
+      console.log(foundUser);
+      console.log(update);
+      if (foundUser.matchedCount === 1) 
+        return res.json({msg: "Update userid #" + idUser + " success"})
+      else 
+        return res.status(500).json({ msg: "Cant find userid" });
+
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async deleteUser(req, res) {
+    try {
+      const {idUser} = req.body
+      const foundUser = await Users.deleteOne({_id: mongoose.Types.ObjectId(idUser)})
+      if (foundUser.deletedCount === 1)
+        return res.json({msg: "Delete userid #" + idUser + " success"})
+      else
+        return res.status(500).json({ msg: "Cant find userid" });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async removeOrder(req, res) {
+    try {
+      const {idOrder} = req.body
+      const foundOrder = await Order.deleteOne({_id: mongoose.Types.ObjectId(idOrder)})
+      if (foundOrder.deletedCount === 1)
+        return res.json({msg: "Delete orderid #" + idOrder + " success"})
+      else 
+        return res.status(500).json({ msg: "Cant find orderid" });
+
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
     }
   }
 }
