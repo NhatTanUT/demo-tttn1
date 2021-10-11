@@ -95,9 +95,9 @@ PATCH http://localhost:3000/admin/user
 Content-Type: application/json
 
 {
-    "idUser": "61517839ac39ee8974e1cf59",
+    "idUser": "6151a7b8ac39ee8974e0d43a",
     "update": {
-        "email" : "A van teo",
+    "email" : "A van teo",
     "firstName" : "asfasfasfasfsa",
     "lastName" : "sdgsdgsdgsdgsdgsd",
     "status" : "Active",
@@ -105,7 +105,8 @@ Content-Type: application/json
     "phonenumber" : "1572727",
     "role" : "User",
     "wishlist" : [],
-    "cart" : ["dfsdfsdfd"]
+    "cart" : ["dfsdfsdfd"],
+    "DOB": "Mon Oct 11 2021 13:44:00 GMT+0700 (Indochina Time)"
     }
 }
 
@@ -118,9 +119,29 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/admin/order
+DELETE https://web-demo.online/admin/order
 Content-Type: application/json
 
 {
-    "idOrder": "615e654ea5b3077a793fb07c"
+    "idOrder": "615e693b93c2b1eaa5f52149"
+}
+
+###
+POST http://localhost:3000/admin/discount
+Content-Type: application/json
+
+{
+    "code": "HELLOWORLD",
+    "expireDate": "Mon Oct 15 2021 13:44:00 GMT+0700 (Indochina Time)",
+    "startDate": "Mon Oct 11 2021 13:44:00 GMT+0700 (Indochina Time)",
+    "amount": 50
+
+}
+
+###
+POST http://localhost:3000/checkDiscount
+Content-Type: application/json
+
+{
+    "code": "HELLOWORLD"
 }

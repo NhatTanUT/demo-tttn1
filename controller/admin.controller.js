@@ -4,9 +4,10 @@ const Category = require("../models/category.model");
 const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
+const Discount = require("../models/discount.model");
 
-const mailer = require('../utils/mailer')
-const {io, getClientOnline} = require('../app')
+const mailer = require("../utils/mailer");
+const { io, getClientOnline } = require("../app");
 
 const mongoose = require("mongoose");
 
@@ -22,13 +23,12 @@ class AdminController {
         });
 
         await newPreviewImage.save();
-        
-        foundProduct.previewImage.push(newPreviewImage._id);
-        
-        foundProduct.save();
 
+        foundProduct.previewImage.push(newPreviewImage._id);
+
+        foundProduct.save();
       });
-      
+
       return res.json({
         msg: "Add preview image success",
         idProduct: idProduct,
@@ -41,12 +41,14 @@ class AdminController {
 
   async addProduct(req, res) {
     try {
-      const update = req.body
+      let update = req.body;
+      
       if (req.file) {
-        update.img = process.env.HOST_WEB + "uploads/" + req.file.filename
+        update.img = process.env.HOST_WEB + "uploads/" + req.file.filename;
       }
+      
       let newProduct = new Product({
-        ...update
+        ...update,
         // id: req.body.id,
         // img: process.env.HOST_WEB + "uploads/" + req.file.filename,
         // title: req.body.title,
@@ -57,7 +59,7 @@ class AdminController {
         // category: req.body.category,
       });
       await newProduct.save();
-      return res.json({msg: 'Add product success', product: newProduct})
+      return res.json({ msg: "Add product success", product: newProduct });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: error.message });
@@ -66,15 +68,15 @@ class AdminController {
 
   async addCategory(req, res) {
     try {
-      const {id, products, name} = req.body
+      const { id, products, name } = req.body;
       let newCategory = new Category({
         id,
         products,
-        name
+        name,
       });
 
       await newCategory.save();
-      return res.json({msg: "Add category success", id, products, name})
+      return res.json({ msg: "Add category success", id, products, name });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: error.message });
@@ -82,30 +84,44 @@ class AdminController {
   }
   async updateProduct(req, res) {
     try {
-      const {idProduct, update} = req.body
-     
-      const foundProduct = await Product.updateOne({_id: mongoose.Types.ObjectId(idProduct)}, {$set: update})
-      
-      return res.json({msg: "Update product success", idProduct, update})
+      let update = req.body;
+
+      if (req.file) {
+        update.img = process.env.HOST_WEB + "uploads/" + req.file.filename;
+      }
+
+      console.log(update);
+      const foundProduct = await Product.updateOne(
+        { _id: mongoose.Types.ObjectId(update.idProduct) },
+        { $set: update }
+      );
+      if (foundProduct.matchedCount === 1)
+        return res.json({ msg: "Update product success", update });
+      else return res.status(500).json({ msg: "Cant find productid" });
+
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ msg: error.message });
     }
   }
   async updateCategory(req, res) {
     try {
-      const {idCategory, update} = req.body
-      
-      await Category.updateOne({_id: mongoose.Types.ObjectId(idCategory)}, {$set: {...update}})
-      
-      return res.json({msg: "Update category success", idCategory, update})
+      const { idCategory, update } = req.body;
+
+      await Category.updateOne(
+        { _id: mongoose.Types.ObjectId(idCategory) },
+        { $set: { ...update } }
+      );
+
+      return res.json({ msg: "Update category success", idCategory, update });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async getAllUser(req, res) {
     try {
-      const allUser = await Users.find({}, "-password -cart")
-  
+      const allUser = await Users.find({}, "-password -cart");
+
       return res.json({ allUser });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -113,19 +129,21 @@ class AdminController {
   }
   async getAllOrder(req, res) {
     try {
-      const allOrder = await Order.find({})
+      const allOrder = await Order.find({});
 
-      return res.json({allOrder})
+      return res.json({ allOrder });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async sendMailWishList(req, res) {
     try {
-      const {idProduct, price} = req.body
-      const subject = "Your wishlist product has changed in price"
+      const { idProduct, price } = req.body;
+      const subject = "Your wishlist product has changed in price";
 
-      const foundProduct = await Product.findOne({_id: mongoose.Types.ObjectId(idProduct)})
+      const foundProduct = await Product.findOne({
+        _id: mongoose.Types.ObjectId(idProduct),
+      });
 
       const body = `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
       <html xmlns="http://www.w3.org/1999/xhtml">
@@ -298,90 +316,108 @@ class AdminController {
                   </tbody>
               </table>
           </body>
-      </html>`
-      
-      const foundWishlist = await Users.find({wishlist: mongoose.Types.ObjectId(idProduct)}, 'email')
+      </html>`;
+
+      const foundWishlist = await Users.find(
+        { wishlist: mongoose.Types.ObjectId(idProduct) },
+        "email"
+      );
 
       Promise.all(
         foundWishlist.map(async (user) => {
-          await mailer.sendMail(user.email, subject, body);      
+          await mailer.sendMail(user.email, subject, body);
         })
-      )
-      
-      return res.json({msg: "Send Mail WishList", foundWishlist, foundProduct})
+      );
+
+      return res.json({
+        msg: "Send Mail WishList",
+        foundWishlist,
+        foundProduct,
+      });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async sendPromotion(req, res) {
     try {
-      const {content} = req.body
+      const { content } = req.body;
 
-      io.emit('Server-sent-notification', {content: content})
-      return res.json({msg: 'Send promotion success', content})
+      io.emit("Server-sent-notification", { content: content });
+      return res.json({ msg: "Send promotion success", content });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async getAllClientOnline(req, res) {
     try {
-      const list = getClientOnline()
-      return res.json({client: list})
+      const list = getClientOnline();
+      return res.json({ client: list });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async sendNotification(req, res) {
     try {
-      const {listUser, content} = req.body
-  
-      const listOnline = getClientOnline()
+      const { listUser, content } = req.body;
+
+      const listOnline = getClientOnline();
       listUser.forEach(async (e) => {
-        const foundUser = listOnline.filter((el) => {if (el.userId === e) return el})
-        
+        const foundUser = listOnline.filter((el) => {
+          if (el.userId === e) return el;
+        });
+
         if (foundUser) {
           foundUser.map(async (ell) => {
-            io.to(ell.socketId).emit('Server-sent-notify', {content: content})
-          })
+            io.to(ell.socketId).emit("Server-sent-notify", {
+              content: content,
+            });
+          });
         }
-        await Users.updateOne({_id: mongoose.Types.ObjectId(e)}, {$push: {notification: {content: content, Date: Date().toLocaleString('en-US', {
-          timeZone: 'Asia/Ho_Chi_Minh'
-      })}}})
-      })
-      return res.json({msg: "Send notification", listUser, content})
+        await Users.updateOne(
+          { _id: mongoose.Types.ObjectId(e) },
+          {
+            $push: {
+              notification: {
+                content: content,
+                Date: Date().toLocaleString("en-US", {
+                  timeZone: "Asia/Ho_Chi_Minh",
+                }),
+              },
+            },
+          }
+        );
+      });
+      return res.json({ msg: "Send notification", listUser, content });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
   async sendNotificationBanner(req, res) {
     try {
-      const {content} = req.body
-      io.emit('Server-sent-notification', {
-            content: content
-          })
-      return res.json({msg: "Send notification", content})
+      const { content } = req.body;
+      io.emit("Server-sent-notification", {
+        content: content,
+      });
+      return res.json({ msg: "Send notification", content });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   // async removeNotify(req, res) {
   //   try {
-      
+
   //   } catch (error) {
   //     return res.status(500).json({ msg: error.message });
-      
+
   //   }
   // }
   async uploadRar(req, res) {
     try {
       const { idProduct } = req.body;
-      const source = "/uploads_rar/" + req.file.filename
-      await Product.updateOne({ _id: idProduct }, {$set: {source: source}});
-      
+      const source = "/uploads_rar/" + req.file.filename;
+      await Product.updateOne({ _id: idProduct }, { $set: { source: source } });
+
       return res.json({
         msg: "Add preview image success",
         idProduct,
@@ -393,82 +429,122 @@ class AdminController {
   }
   async removeProduct(req, res) {
     try {
-      const {idProduct} = req.body
-      const foundProduct = await Product.deleteOne({_id: mongoose.Types.ObjectId(idProduct)})
+      const { idProduct } = req.body;
+      const foundProduct = await Product.deleteOne({
+        _id: mongoose.Types.ObjectId(idProduct),
+      });
       if (foundProduct.deletedCount === 1)
-        return res.json({msg: "Delete productId #" + idProduct + " success"})
+        return res.json({ msg: "Delete productId #" + idProduct + " success" });
       else {
         return res.status(500).json({ msg: "Can't find productid" });
       }
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async removeCategory(req, res) {
     try {
-      const {idCategory} = req.body
-      const foundCategory = await Category.deleteOne({_id: mongoose.Types.ObjectId(idCategory)})
+      const { idCategory } = req.body;
+      const foundCategory = await Category.deleteOne({
+        _id: mongoose.Types.ObjectId(idCategory),
+      });
       if (foundCategory.deletedCount === 1)
-        return res.json({msg: "Delete category #" + idCategory + " success"})
+        return res.json({ msg: "Delete category #" + idCategory + " success" });
       else {
         return res.status(500).json({ msg: "Can't find categoryid" });
       }
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async updateUser(req, res) {
     try {
-      const {idUser, update} = req.body
+      const { idUser, update } = req.body;
 
-      delete update.password
-      delete update._id
-      delete update.wishlist
-      delete update.cart
-      delete update.notification
-      delete update.role
-      delete update.status
+      delete update.password;
+      delete update._id;
+      delete update.wishlist;
+      delete update.cart;
+      delete update.notification;
+      delete update.role;
+      delete update.status;
 
-      const foundUser = await Users.updateOne({_id: mongoose.Types.ObjectId(idUser)}, {$set: update})
-      console.log(foundUser);
-      console.log(update);
-      if (foundUser.matchedCount === 1) 
-        return res.json({msg: "Update userid #" + idUser + " success"})
-      else 
-        return res.status(500).json({ msg: "Cant find userid" });
+      const foundUser = await Users.updateOne(
+        { _id: mongoose.Types.ObjectId(idUser) },
+        { $set: update }
+      );
+      
 
+      if (foundUser.matchedCount === 1)
+        return res.json({ msg: "Update userid #" + idUser + " success" });
+      else return res.status(500).json({ msg: "Cant find userid" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async deleteUser(req, res) {
     try {
-      const {idUser} = req.body
-      const foundUser = await Users.deleteOne({_id: mongoose.Types.ObjectId(idUser)})
+      const { idUser } = req.body;
+      const foundUser = await Users.deleteOne({
+        _id: mongoose.Types.ObjectId(idUser),
+      });
       if (foundUser.deletedCount === 1)
-        return res.json({msg: "Delete userid #" + idUser + " success"})
-      else
-        return res.status(500).json({ msg: "Cant find userid" });
+        return res.json({ msg: "Delete userid #" + idUser + " success" });
+      else return res.status(500).json({ msg: "Cant find userid" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async removeOrder(req, res) {
     try {
-      const {idOrder} = req.body
-      const foundOrder = await Order.deleteOne({_id: mongoose.Types.ObjectId(idOrder)})
+      const { idOrder } = req.body;
+      const foundOrder = await Order.deleteOne({
+        _id: mongoose.Types.ObjectId(idOrder),
+      });
       if (foundOrder.deletedCount === 1)
-        return res.json({msg: "Delete orderid #" + idOrder + " success"})
-      else 
-        return res.status(500).json({ msg: "Cant find orderid" });
-
+        return res.json({ msg: "Delete orderid #" + idOrder + " success" });
+      else return res.status(500).json({ msg: "Cant find orderid" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
+    }
+  }
+  async addDiscount(req, res) {
+    try {
+      let { code,expireDate, startDate, amount } =
+        req.body;
+
+      // expireDate = new Date(expireDate).toLocaleString("en-US", {
+      //   timeZone: "Asia/Ho_Chi_Minh",
+      // });
+      // startDate = new Date(startDate).toLocaleString("en-US", {
+      //   timeZone: "Asia/Ho_Chi_Minh",
+      // });
+      // console.log(expireDate);
+      // console.log(startDate);
+      if (amount < 0) {
+        return res.status(500).json({ msg: "Amount must >= 0" });
+      }
+
+      if (amount > 100) {
+        return res.status(500).json({ msg: "Amount must < 100" });
+      }
+
+      const foundDiscount = await Discount.findOne({code}).lean()
+
+      if (foundDiscount) 
+        return res.status(500).json({msg: "Discount code has already exist"})
+
+      let newDiscount = new Discount({
+        code,
+        expireDate,
+        startDate,
+        amount
+      });
+
+      await newDiscount.save();
+      return res.json({ msg: "New discount: " + code });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
     }
   }
 }

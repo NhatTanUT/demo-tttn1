@@ -2,9 +2,10 @@ const dotenv = require("dotenv");
 const express = require("express");
 const path = require("path");
 var cors = require("cors");
-const cookiePasrer = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const socketio = require("socket.io")
+const helmet = require('helmet')
 
 const http = require('http');
 const app = express();
@@ -18,9 +19,10 @@ app.set("views", "./views");
 
 const pathPublic = path.join(__dirname, "/public");
 
+app.use(helmet())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookiePasrer());
+app.use(cookieParser());
 app.use(cors());
 app.use(morgan("dev"));
 app.use("/uploads", express.static("uploads"));

@@ -4,11 +4,11 @@ const Category = require("../models/category.model");
 const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
+const Discount = require("../models/discount.model");
+const checkDiscount = require("../middleware/checkDiscount");
 
-const fs = require("fs");
 const path = require("path");
 
-const download = require("download");
 const mailer = require("../utils/mailer");
 const brcypt = require("bcrypt");
 const mongoose = require("mongoose");
@@ -212,9 +212,9 @@ class UserController {
   }
   async sendMailOrder(req, res) {
     try {
-      if (!res.locals.newOrder) console.log("Error") 
-      const newOrder = res.locals.newOrder
-      
+      if (!res.locals.newOrder) console.log("Error");
+      const newOrder = res.locals.newOrder;
+
       const subject = "Checkout Order #" + newOrder._id + " success";
       const to = newOrder.email;
 
@@ -332,7 +332,7 @@ class UserController {
 </td>`;
       }
 
-      await mailer.sendMail(to, subject, body); 
+      await mailer.sendMail(to, subject, body);
       // ##############################################
     } catch (error) {
       console.log(error);
@@ -500,9 +500,9 @@ class UserController {
 
       newOrder.save();
 
-      res.locals.newOrder = newOrder
+      res.locals.newOrder = newOrder;
       res.json({ msg: "Add order success", order: newOrder });
-      next()
+      next();
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: error.message });
@@ -931,6 +931,31 @@ class UserController {
           return res.download(filePath, file);
         }
       }
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async check_Discount(req, res) {
+    try {
+      const { code } = req.body;
+
+      let foundDiscount = await checkDiscount(code);
+
+      if (foundDiscount) {
+        foundDiscount.startDate = new Date(
+          Date.parse(foundDiscount.startDate)
+        ).toLocaleString("en-US", {
+          timeZone: "Asia/Ho_Chi_Minh",
+        });
+        foundDiscount.expireDate = new Date(
+          Date.parse(foundDiscount.expireDate)
+        ).toLocaleString("en-US", {
+          timeZone: "Asia/Ho_Chi_Minh",
+        });
+        
+        return res.json({ foundDiscount });
+      }
+      return res.status(500).json({ msg: "Cant find discount" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

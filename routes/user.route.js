@@ -35,5 +35,6 @@ route.get('/wishlist', auth, UserController.getWishlist)
 route.post('/removeWishlist', auth, UserController.removeWishlist)
 route.get('/notification', auth, UserController.getNotification)
 route.get('/download/:idUser/:idProduct', UserController.downloadSource)
+route.post('/checkDiscount', UserController.check_Discount)
 
 module.exports = route;
