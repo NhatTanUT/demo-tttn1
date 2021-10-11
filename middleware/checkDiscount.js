@@ -1,9 +1,11 @@
 const Discount = require('../models/discount.model')
-async function checkDiscount(code) {
+async function checkDiscount(req, res, next) {
   try {
-    //   const {code} = req.body
+    const {discount} = req.body
 
-    const foundDiscount = await Discount.findOne({ code: code }).lean();
+    if (!discount || discount === '') return next()
+
+    const foundDiscount = await Discount.findOne({ code: discount }).lean();
 
     const currentDate = new Date();
     if (!(currentDate >= new Date(foundDiscount.startDate)))
@@ -13,7 +15,8 @@ async function checkDiscount(code) {
 
     if (!foundDiscount) throw new Error("Cant found discount code");
     
-    return foundDiscount
+    res.locals.discount = foundDiscount
+    next()
   } catch (error) {
     throw new Error(error.message);
   }

@@ -462,7 +462,6 @@ class UserController {
     try {
       const {
         orderItems,
-        status,
         idUser,
         Datetime,
         total,
@@ -478,6 +477,8 @@ class UserController {
         postalCode,
         phone,
       } = req.body;
+
+      let status = "Unpaid"
 
       const newOrder = new Order({
         OrderItems: orderItems,
@@ -501,7 +502,7 @@ class UserController {
       newOrder.save();
 
       res.locals.newOrder = newOrder;
-      res.json({ msg: "Add order success", order: newOrder });
+      // res.json({ msg: "Add order success", order: newOrder });
       next();
     } catch (error) {
       console.log(error);
@@ -739,18 +740,29 @@ class UserController {
   }
   async checkout(req, res, next) {
     try {
-      const {
+      let {
         email,
         firstName,
         lastName,
-        amount,
         number,
         exp_month,
         exp_year,
         cvc,
+        total
       } = req.body;
       // const id = req.user._id;
+      let discount = res.locals.discount
 
+      total = Number.parseInt(total)
+
+      let amount
+
+      if (discount)
+        amount = Math.round(total * discount.amount)
+      else
+        amount = total * 100
+
+      
       const customer = await stripe.customers.create({
         email: email,
         name: firstName + " " + lastName,
@@ -778,9 +790,22 @@ class UserController {
         currency: "usd",
         source: token.id,
       });
-      // console.log(charge);
+      
+      if (charge.status === 'succeeded') {
+        const idOrder = res.locals.newOrder._id
+        const foundOrder = await Order.updateOne({_id: mongoose.Types.ObjectId(idOrder)}, {$set: {status: 'Paid'}})
+        
+        if (foundOrder.matchedCount === 1) {
+          res.json({msg: 'Checkout #'+idOrder + " success"}) 
+        }
+        else (
+          res.status(500).json({msg: 'Checkout #'+idOrder + " fail"})
+        )
 
-      next();
+      }
+
+
+      next()
     } catch (error) {
       console.log(error.message);
       return res.status(500).json({ msg: error.message });
@@ -815,6 +840,7 @@ class UserController {
         user: { _id: id, firstName: firstName, lastName: lastName },
       });
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ msg: error.message });
     }
   }
@@ -937,25 +963,10 @@ class UserController {
   }
   async check_Discount(req, res) {
     try {
-      const { code } = req.body;
-
-      let foundDiscount = await checkDiscount(code);
-
-      if (foundDiscount) {
-        foundDiscount.startDate = new Date(
-          Date.parse(foundDiscount.startDate)
-        ).toLocaleString("en-US", {
-          timeZone: "Asia/Ho_Chi_Minh",
-        });
-        foundDiscount.expireDate = new Date(
-          Date.parse(foundDiscount.expireDate)
-        ).toLocaleString("en-US", {
-          timeZone: "Asia/Ho_Chi_Minh",
-        });
-        
-        return res.json({ foundDiscount });
+      if (res.locals.discount) {
+        return res.json(res.locals.discount)
       }
-      return res.status(500).json({ msg: "Cant find discount" });
+      return res.status(500).json({ msg: "Cant find discount1" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }

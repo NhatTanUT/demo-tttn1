@@ -143,5 +143,5 @@ POST http://localhost:3000/checkDiscount
 Content-Type: application/json
 
 {
-    "code": "HELLOWORLD"
+    "code": ""
 }
