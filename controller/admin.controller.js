@@ -93,12 +93,17 @@ class AdminController {
       delete update.rate
 
       if (req.files) {
-        update.previewImage = []
-        for (let el of req.files.previewImage) {
-          let img = process.env.HOST_WEB + "uploads/" + el.filename
-          update.previewImage.push(img)
+        if (req.files.previewImage) {
+          update.previewImage = []
+          for (let el of req.files.previewImage) {
+            let img = process.env.HOST_WEB + "uploads/" + el.filename
+            update.previewImage.push(img)
+          }
         }
-        update.img = process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
+        if (req.files.img) {
+          update.img = process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
+
+        }
       }
 
       // console.log(update);
