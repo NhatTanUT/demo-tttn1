@@ -158,7 +158,7 @@ class UserController {
     }
   }
   async getProducts(req, res) {
-    const data = await Product.find({}).populate("previewImage");
+    const data = await Product.find({});
     return res.json({ count: data.length, entries: data });
   }
   async getProduct(req, res) {

@@ -13,11 +13,14 @@ route.get('/', (req, res) => {
     res.render('admin')
 })
 
+const uploadMultiple = upload.fields([{ name: 'img', maxCount: 1 }, { name: 'previewImage', maxCount: 6 }])
+
+
 route.post('/register', UserController.register)
 route.post('/previewImg', upload.array('img', 10), AdminController.addPreview)
-route.post('/product', upload.single('img'), AdminController.addProduct )
+route.post('/product', uploadMultiple, AdminController.addProduct )
 route.post('/category', AdminController.addCategory)
-route.patch('/product', upload.single('img'), AdminController.updateProduct)
+route.patch('/product', uploadMultiple, AdminController.updateProduct)
 route.patch('/category', AdminController.updateCategory)
 route.delete('/product', AdminController.removeProduct)
 route.delete('/category', AdminController.removeCategory)

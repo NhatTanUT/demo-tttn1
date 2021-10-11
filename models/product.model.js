@@ -29,8 +29,7 @@ const productSchema = new mongoose.Schema({
         type: String
     },
     "previewImage": [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: PreviewImage
+        type: String
     }],
     "ventor": {
         type: String

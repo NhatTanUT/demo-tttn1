@@ -42,21 +42,26 @@ class AdminController {
   async addProduct(req, res) {
     try {
       let update = req.body;
+
+      delete update.rate
       
-      if (req.file) {
-        update.img = process.env.HOST_WEB + "uploads/" + req.file.filename;
+      if (!req.files) {
+        return res.status(500).json({ msg: 'Must have img product' });  
+      }
+      
+      update.img = process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
+      
+
+      let previewImage = []
+      for (let el of req.files.previewImage) {
+        let img = process.env.HOST_WEB + "uploads/" + el.filename
+        previewImage.push(img)
       }
       
       let newProduct = new Product({
         ...update,
-        // id: req.body.id,
-        // img: process.env.HOST_WEB + "uploads/" + req.file.filename,
-        // title: req.body.title,
-        // rate: req.body.rate,
-        // price: req.body.price,
-        // description: req.body.description,
-        // quantity: req.body.quantity,
-        // category: req.body.category,
+        previewImage
+        
       });
       await newProduct.save();
       return res.json({ msg: "Add product success", product: newProduct });
@@ -85,12 +90,18 @@ class AdminController {
   async updateProduct(req, res) {
     try {
       let update = req.body;
+      delete update.rate
 
-      if (req.file) {
-        update.img = process.env.HOST_WEB + "uploads/" + req.file.filename;
+      if (req.files) {
+        update.previewImage = []
+        for (let el of req.files.previewImage) {
+          let img = process.env.HOST_WEB + "uploads/" + el.filename
+          update.previewImage.push(img)
+        }
+        update.img = process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
       }
 
-      console.log(update);
+      // console.log(update);
       const foundProduct = await Product.updateOne(
         { _id: mongoose.Types.ObjectId(update.idProduct) },
         { $set: update }
