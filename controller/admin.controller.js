@@ -103,7 +103,7 @@ class AdminController {
 
       // console.log(update);
       const foundProduct = await Product.updateOne(
-        { _id: mongoose.Types.ObjectId(update.idProduct) },
+        { id: (update.idProduct) },
         { $set: update }
       );
       if (foundProduct.matchedCount === 1)
