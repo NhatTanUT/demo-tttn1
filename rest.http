@@ -29,7 +29,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/admin/category
+PATCH https://web-demo.online/admin/category
 Content-Type: application/json
 
 {
