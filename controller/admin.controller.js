@@ -74,9 +74,8 @@ class AdminController {
 
   async addCategory(req, res) {
     try {
-      const { id, products, name } = req.body;
+      const {products, name } = req.body;
       let newCategory = new Category({
-        id,
         products,
         name,
       });

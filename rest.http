@@ -38,12 +38,12 @@ Content-Type: application/json
         "products": [ 
             "611ca9d835f54f93292951c6"
         ],
-        "category": "demo12"
+        "name1": "demo1"
     }
 }
 
 ###
-POST http://localhost:3000/admin/category
+POST https://web-demo.online/admin/category
 Content-Type: application/json
 
 {
@@ -53,7 +53,7 @@ Content-Type: application/json
         "61125d66516b371f38dc1b40"
         
     ],
-    "category": "demo"
+    "name": "demo"
 }
 
 ###
@@ -171,3 +171,5 @@ Content-Type: application/json
     "expireDate": "Tue Oct 12 2021 20:34:16 GMT+0700 (Indochina Time)",
     "amount": 60
 }
+
+###
