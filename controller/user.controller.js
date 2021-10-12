@@ -1,7 +1,7 @@
 const Users = require("../models/user.model");
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
-const PreviewImage = require("../models/previewImage.model");
+
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const Discount = require("../models/discount.model");
@@ -10,7 +10,7 @@ const checkDiscount = require("../middleware/checkDiscount");
 const path = require("path");
 
 const mailer = require("../utils/mailer");
-const brcypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const stripe = require("stripe")(process.env.STRIPE_KEY);
@@ -39,7 +39,7 @@ class UserController {
           .status(400)
           .json({ msg: "Password must be at least 6 characters." });
 
-      const passwordHash = await brcypt.hash(password, 12);
+      const passwordHash = await bcrypt.hash(password, 12);
 
       let role1 = "user";
       if (req.user) {
@@ -94,7 +94,7 @@ class UserController {
       if (!user)
         return res.status(400).json({ msg: "This email does not exist." });
 
-      const isMatch = await brcypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch)
         return res.status(400).json({ msg: "Password is incorrect." });
 
@@ -170,10 +170,7 @@ class UserController {
     const data = await Category.find({}).populate("products");
     return res.json({ count: data.length, entries: data });
   }
-  async getPreviewImage(req, res) {
-    const data = await PreviewImage.find({});
-    return res.json(data);
-  }
+  
   async changePassword(req, res) {
     try {
       const userId = req.user._id;
@@ -184,7 +181,7 @@ class UserController {
           .status(400)
           .json({ msg: "Password must be at least 6 characters." });
 
-      const passwordHash = await brcypt.hash(password, 12);
+      const passwordHash = await bcrypt.hash(password, 12);
 
       await Users.updateOne(
         {
@@ -647,7 +644,7 @@ class UserController {
     );
     if (!user) return res.status(401).json({ msg: "Invalid Authentication." });
 
-    const passwordHash = await brcypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 12);
 
     await Users.updateOne(
       { _id: user.id },

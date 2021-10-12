@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const PreviewImage = require('./previewImage.model')
 
 const productSchema = new mongoose.Schema({
     "id": {

@@ -1,10 +1,11 @@
 const Users = require("../models/user.model");
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
-const PreviewImage = require("../models/previewImage.model");
+// const PreviewImage = require("../models/previewImage.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const Discount = require("../models/discount.model");
+const bcrypt = require("bcrypt")
 
 const mailer = require("../utils/mailer");
 const { io, getClientOnline } = require("../app");
@@ -12,32 +13,32 @@ const { io, getClientOnline } = require("../app");
 const mongoose = require("mongoose");
 
 class AdminController {
-  async addPreview(req, res) {
-    try {
-      const { idProduct } = req.body;
-      let foundProduct = await Product.findOne({ _id: idProduct });
+  // async addPreview(req, res) {
+  //   try {
+  //     const { idProduct } = req.body;
+  //     let foundProduct = await Product.findOne({ _id: idProduct });
 
-      req.files.forEach(async (e) => {
-        let newPreviewImage = new PreviewImage({
-          src: process.env.HOST_WEB + "uploads/" + e.originalname,
-        });
+  //     req.files.forEach(async (e) => {
+  //       let newPreviewImage = new PreviewImage({
+  //         src: process.env.HOST_WEB + "uploads/" + e.originalname,
+  //       });
 
-        await newPreviewImage.save();
+  //       await newPreviewImage.save();
 
-        foundProduct.previewImage.push(newPreviewImage._id);
+  //       foundProduct.previewImage.push(newPreviewImage._id);
 
-        foundProduct.save();
-      });
+  //       foundProduct.save();
+  //     });
 
-      return res.json({
-        msg: "Add preview image success",
-        idProduct: idProduct,
-        previewImg: foundProduct.previewImage,
-      });
-    } catch (error) {
-      return res.status(500).json({ msg: error.message });
-    }
-  }
+  //     return res.json({
+  //       msg: "Add preview image success",
+  //       idProduct: idProduct,
+  //       previewImg: foundProduct.previewImage,
+  //     });
+  //   } catch (error) {
+  //     return res.status(500).json({ msg: error.message });
+  //   }
+  // }
 
   async addProduct(req, res) {
     try {
@@ -123,7 +124,7 @@ class AdminController {
   async updateCategory(req, res) {
     try {
       const { idCategory, update } = req.body;
-
+      delete update.id
       await Category.updateOne(
         { _id: mongoose.Types.ObjectId(idCategory) },
         { $set: { ...update } }
@@ -561,6 +562,120 @@ class AdminController {
       return res.json({ msg: "New discount: " + code });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
+    }
+  }
+  async removeDiscount(req, res) {
+    try {
+      const {code} = req.body
+      const foundDiscount = await Discount.deleteOne({
+        code: code
+      });
+      if (foundDiscount.deletedCount === 1)
+        return res.json({ msg: "Delete discount " + code + " success" });
+      else return res.status(500).json({ msg: "Cant find discount" });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async addUser(req, res) {
+    try {
+      const {
+        email,
+        password,
+        firstName,
+        lastName,
+        role,
+        gender,
+        DOB,
+        phonenumber,
+      } = req.body;
+
+      const foundEmail = await Users.findOne({ email: email });
+      if (foundEmail)
+        return res.status(400).json({ msg: "This email already registered. " });
+
+      if (password.length < 6)
+        return res
+          .status(400)
+          .json({ msg: "Password must be at least 6 characters." });
+
+      const passwordHash = await bcrypt.hash(password, 12);
+
+      let role1 = "user";
+      if (req.user) {
+        if (req.user.role === "admin") {
+          if (role) {
+            role1 = role;
+          }
+        }
+      }
+
+      const newUser = new Users({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: passwordHash,
+        role: role1,
+        DOB,
+        gender,
+        phonenumber,
+      });
+
+      await newUser.save();
+
+      return res.json({
+        msg: "Add User Success! ",
+        user: {
+          ...newUser._doc,
+          password: "",
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async getDiscount(req, res) {
+    try {
+      const foundDiscount = await Discount.find().lean()
+
+      return res.json({foundDiscount})
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async updateDiscount(req, res) {
+    try {
+      const {code, startDate, expireDate, amount} = req.body
+      
+      if (startDate && expireDate) {
+        if (new Date(startDate) <= new Date(expireDate)) {
+          return res.status(500).json({msg: "startDate must > expireDate"})
+        }
+      }
+
+      if (!code || code === '') {
+        return res.status(500).json({msg: "Must have code"})
+      }
+
+      if (amount > 100) {
+        return res.status(500).json({msg: "Amount must < 100"})
+      }
+
+      const foundDiscount = await Discount.updateOne({code: code}, {$set: {startDate, expireDate, amount}})
+
+      if (foundDiscount.matchedCount === 1) {
+        return res.json({msg: "Update success", code, startDate, expireDate, amount})
+      }
+      else {
+        return res.status(500).json({msg: "Cant find discount"})
+      }
+      
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
     }
   }
 }

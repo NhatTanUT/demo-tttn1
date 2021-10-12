@@ -35,7 +35,6 @@ Content-Type: application/json
 {
     "idCategory": "6160158b0435705dbe1464c7",
     "update": {
-        "id": "c6",
         "products": [ 
             "611ca9d835f54f93292951c6"
         ],
@@ -111,11 +110,11 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/admin/user
+DELETE https://web-demo.online/admin/user
 Content-Type: application/json
 
 {
-    "idUser": "61517839ac39ee8974e0cf59"
+    "idUser": "6151a7b8ac39ee8974e0d43a"
 }
 
 ###
@@ -144,4 +143,31 @@ Content-Type: application/json
 
 {
     "code": ""
+}
+
+###
+POST http://localhost:3000/admin/user
+Content-Type: application/json
+
+{
+    "email": "nhattan24121999@gmail.com",
+    "password": "123456",
+    "firstName": "Nhat",
+    "lastName": "Tan",
+    "gender": "Male",
+    "DOB": "Tue Oct 12 2021 20:34:16 GMT+0700 (Indochina Time)",
+    "phonenumber": "2348543241"
+}
+
+###
+GET http://localhost:3000/admin/discount
+
+###
+PATCH http://localhost:3000/admin/discount  
+Content-Type: application/json
+
+{
+    "code": "HELLOWORLD",
+    "expireDate": "Tue Oct 12 2021 20:34:16 GMT+0700 (Indochina Time)",
+    "amount": 60
 }
