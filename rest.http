@@ -33,12 +33,12 @@ PATCH http://localhost:3000/admin/category
 Content-Type: application/json
 
 {
-    "idCategory": "6160158b0435705dbe1464c7",
+    "idCategory": "61129ba8516b371f383a1742",
     "update": {
         "products": [ 
             "611ca9d835f54f93292951c6"
         ],
-        "category": "demo1"
+        "category": "demo12"
     }
 }
 
@@ -160,7 +160,7 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/admin/discount
+GET https://web-demo.online/admin/discount
 
 ###
 PATCH http://localhost:3000/admin/discount  

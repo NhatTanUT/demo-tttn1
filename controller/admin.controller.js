@@ -125,13 +125,16 @@ class AdminController {
     try {
       const { idCategory, update } = req.body;
       delete update.id
-      await Category.updateOne(
+      const foundCategory = await Category.updateOne(
         { _id: mongoose.Types.ObjectId(idCategory) },
         { $set: { ...update } }
       );
 
-      return res.json({ msg: "Update category success", idCategory, update });
-    } catch (error) {
+      if (foundCategory.matchedCount === 1)
+        return res.json({ msg: "Update category success", idCategory, update });
+      else 
+        return res.status(500).json({msg: "Cant find category"})
+      } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
