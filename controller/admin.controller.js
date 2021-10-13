@@ -9,8 +9,9 @@ const bcrypt = require("bcrypt")
 
 const mailer = require("../utils/mailer");
 const { io, getClientOnline } = require("../app");
-
+const {createAccessToken, createRefreshToken} = require('../utils/createToken')
 const mongoose = require("mongoose");
+const { sendMail } = require("../utils/mailer");
 
 class AdminController {
   // async addPreview(req, res) {
@@ -81,7 +82,7 @@ class AdminController {
       });
 
       await newCategory.save();
-      return res.json({ msg: "Add category success", id, products, name });
+      return res.json({ msg: "Add category success", newCategory });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: error.message });
@@ -675,6 +676,81 @@ class AdminController {
         return res.status(500).json({msg: "Cant find discount"})
       }
       
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
+  async register(req, res, next) {
+    try {
+      const {
+        email,
+        firstName,
+        lastName,
+        role,
+        gender,
+        DOB,
+        phonenumber,
+      } = req.body;
+      // let newEmail = email.toLowerCase() // /g replace remove first element. /g to remove all (purpose: remove space)
+
+      const foundEmail = await Users.findOne({ email: email });
+      if (foundEmail)
+        return res.status(400).json({ msg: "This email already registered. " });
+
+      let password =  Math.floor(Math.random() * (999999 - 100000) + 100000)
+
+      const passwordHash = await bcrypt.hash(password.toString(), 12);
+
+      const newUser = new Users({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: passwordHash,
+        role: role,
+        DOB,
+        gender,
+        phonenumber,
+      });
+
+      await newUser.save();
+
+      // res.cookie("refresh_token", refresh_token, {
+      //   httpOnly: true,
+      //   path: "/refresh_token",
+      //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      // });
+
+      res.locals.password = password
+      res.locals.user = newUser
+      next()
+
+      return res.json({
+        msg: "Register Success! ",
+        user: {
+          ...newUser._doc,
+          password: "",
+        },
+      });
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+    }
+  }
+  async sendMailRegister(req, res) {
+    try {
+      const user = res.locals.user
+      const password = res.locals.password
+
+      const to = user.email
+      const subject = "Register user"
+      const body = `<p>Email: ${user.email}</p>
+      <p>Firstname: ${user.firstName}</p>
+      <p>Lastname: ${user.lastName}</p>
+      <p>Password: ${password}</p>
+      <p>Phonenumber: ${user.phonenumber}</p>
+      <p>Gender: ${user.gender}</p>`
+
+      return await sendMail(to, subject, body)
     } catch (error) {
       return res.status(500).json({ msg: error.message });
       

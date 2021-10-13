@@ -43,7 +43,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://web-demo.online/admin/category
+POST http://localhost:3000/admin/category
 Content-Type: application/json
 
 {
@@ -172,3 +172,14 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:3000/admin/register
+Content-Type: application/json
+
+{
+    "email": "1851120111@sv.ut.edu.vn",
+    "firstName": "demo",
+    "lastName": "demo1",
+    "role": "admin",
+    "gender": "Male",
+    "phonenumber": "45634536534"
+}

@@ -4,11 +4,11 @@ const Category = require("../models/category.model");
 
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
-const Discount = require("../models/discount.model");
-const checkDiscount = require("../middleware/checkDiscount");
+
+const {createAccessToken, createRefreshToken} = require('../utils/createToken')
+
 
 const path = require("path");
-
 const mailer = require("../utils/mailer");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
@@ -968,18 +968,6 @@ class UserController {
       return res.status(500).json({ msg: error.message });
     }
   }
-}
-
-function createAccessToken(payload) {
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "1d",
-  });
-}
-
-function createRefreshToken(payload) {
-  return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
-    expiresIn: "30d",
-  });
 }
 
 module.exports = new UserController();

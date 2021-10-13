@@ -6,9 +6,9 @@ const auth = require('../middleware/auth')
 const upload = require('../middleware/upload')
 const checkDiscount = require('../middleware/checkDiscount')
 
-// route.get('/', (req, res) => {
-//     res.render('client')
-// })
+route.get('/', (req, res) => {
+    res.render('client')
+})
 
 route.post('/register', UserController.register);
 route.post('/login', UserController.login);

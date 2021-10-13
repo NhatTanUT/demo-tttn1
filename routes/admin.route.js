@@ -7,7 +7,6 @@ const upload = require('../middleware/upload')
 const upload_rar = require('../middleware/upload_rar')
 
 const AdminController = require('../controller/admin.controller')
-const UserController = require('../controller/user.controller')
 
 route.get('/', (req, res) => {
     res.render('admin')
@@ -16,8 +15,7 @@ route.get('/', (req, res) => {
 const uploadMultiple = upload.fields([{ name: 'img', maxCount: 1 }, { name: 'previewImage', maxCount: 6 }])
 
 
-route.post('/register', UserController.register)
-// route.post('/previewImg', upload.array('img', 10), AdminController.addPreview)
+route.post('/register', AdminController.register, AdminController.sendMailRegister)
 route.post('/product', uploadMultiple, AdminController.addProduct )
 route.post('/category', AdminController.addCategory)
 route.patch('/product', uploadMultiple, AdminController.updateProduct)
