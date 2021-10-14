@@ -1,8 +1,10 @@
 const {MongoClient} = require('mongodb');
+const dotenv = require('dotenv')
+dotenv.config()
 
 const {ObjectId} = require('bson')
 
-const uri = "mongodb+srv://admin:admin@cluster0.equfm.mongodb.net/demo-tttn?retryWrites=true&w=majority"
+const uri = process.env.URI_DATABASE
 const dbName = "demo-tttn"
 const client = new MongoClient(uri);
 
@@ -71,7 +73,7 @@ async function main(){
         // console.log(foundOrder);
 
         // lay order theo ngay
-        
+
     } catch (e) {
         console.error(e);
     } finally {
