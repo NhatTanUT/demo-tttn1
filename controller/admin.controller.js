@@ -55,9 +55,12 @@ class AdminController {
       
 
       let previewImage = []
-      for (let el of req.files.previewImage) {
-        let img = process.env.HOST_WEB + "uploads/" + el.filename
-        previewImage.push(img)
+      if (req.files.previewImage) {
+        for (let el of req.files.previewImage) {
+          let img = process.env.HOST_WEB + "uploads/" + el.filename
+          previewImage.push(img)
+        }
+
       }
       
       let newProduct = new Product({

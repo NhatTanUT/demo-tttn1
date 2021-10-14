@@ -172,14 +172,14 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/admin/register
+POST https://web-demo.online/admin/register
 Content-Type: application/json
 
 {
-    "email": "1851120111@sv.ut.edu.vn",
-    "firstName": "demo",
-    "lastName": "demo1",
-    "role": "admin",
+    "email": "tvnt221@gmail.com",
+    "firstName": "Nhat",
+    "lastName": "Tan",
+    "role": "user",
     "gender": "Male",
     "phonenumber": "45634536534"
 }
