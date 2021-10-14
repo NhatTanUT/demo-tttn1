@@ -36,17 +36,34 @@ async function main(){
         // console.log(allProduct);
 
         // lay order theo ngay
-        const getDate = new Date().getDate()
+        // const getDate = new Date().getDate()
 
+        // const foundOrder = (await db.collection("orders").find({}).toArray()).filter(el => {
+        //     return (el.Datetime).getDate() === getDate
+        // }) 
+        // console.log(foundOrder); 
 
-        const foundOrder = await (await db.collection("orders").find({}).toArray()).filter(el => {
-            ObjectId(el._id).getTimestamp().getDate() === getDate
-        })
+        //lay order theo tuan
+        // const getDay = new Date().getDay()
+        // let dateNow = new Date()
+        // dateNow.setHours(0, 0, 0, 0)
+        // // dateNow = new Date(dateNow.getFullYear(),dateNow.getMonth(), dateNow.getDate())
+        // console.log(dateNow.toLocaleString());
+        // const lastMonday = new Date(dateNow.setDate(dateNow.getDate() - getDay + 1));
+        // console.log(lastMonday.toLocaleString());
+        // dateNow = new Date()
+        // dateNow.setHours(0,0,0,0)
+        // const lastSunday = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay)));
+        // console.log(lastSunday.toLocaleString());
 
-        console.log(foundOrder);
+        // const foundOrder = await db.collection("orders").find({"Datetime": {$lte: lastSunday, $gte: lastMonday}}).toArray()
 
+        // console.log(foundOrder);
 
- 
+        //lay order theo thang
+        
+
+        
     } catch (e) {
         console.error(e);
     } finally {

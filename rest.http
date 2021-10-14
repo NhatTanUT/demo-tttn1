@@ -185,7 +185,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://web-demo.online/admin/addOrder
+POST https://web-demo.online/addOrder
 Content-Type: application/json
 
 {
@@ -203,7 +203,7 @@ Content-Type: application/json
         }],
         "idUser": "615331ffc7dc43e2e5c84f45",
         "total": 12.5,
-        "discount": "HELLOWORLD",
+        "discount": "",
         "email": "nhattan24121999@gmail.com",
         "firstName": "123456",
         "lastName": "123456",
