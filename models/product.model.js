@@ -35,6 +35,10 @@ const productSchema = new mongoose.Schema({
     },
     "source": {
         type: String
+    },
+    "count": {
+        type: Number,
+        default: 0
     }
 })
 

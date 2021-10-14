@@ -183,3 +183,39 @@ Content-Type: application/json
     "gender": "Male",
     "phonenumber": "45634536534"
 }
+
+###
+POST https://web-demo.online/admin/addOrder
+Content-Type: application/json
+
+{
+        "orderItems": [{
+            "idProduct": "61124f8570dfe42c98e9925f",
+            "name": "ssvsdvdsvd",
+            "quantity": 1,
+            "price": 12.98
+        }, 
+        {
+            "idProduct": "61125d55516b371f38dc04d4",
+            "name": "ssvsdvdsvd",
+            "quantity": 1,
+            "price": 12.98
+        }],
+        "idUser": "615331ffc7dc43e2e5c84f45",
+        "total": 12.5,
+        "discount": "HELLOWORLD",
+        "email": "nhattan24121999@gmail.com",
+        "firstName": "123456",
+        "lastName": "123456",
+        "company": "",
+        "address": "Ho Chi Minh",
+        "apartment": "",
+        "city": "Ho Chi Minh",
+        "country": "Viet Nam",
+        "postalCode": "123456",
+        "phone": "123456",
+        "number": 4242424242424242,
+        "exp_month": 12,
+        "exp_year": 2025,
+        "cvc": 522
+      }

@@ -9,11 +9,11 @@ async function checkDiscount(req, res, next) {
 
     const currentDate = new Date();
     if (!(currentDate >= new Date(foundDiscount.startDate)))
-      throw new Error("Too early to submit discount");
+      return res.status(500).json({msg: "Too early to submit discount"});
     if (!(currentDate <= new Date(foundDiscount.expireDate)))
-      throw new Error("Expire discount");
+      return res.status(500).json({msg: "Expire discount"});
 
-    if (!foundDiscount) throw new Error("Cant found discount code");
+    if (!foundDiscount) return res.status(500).json({msg: "Cant found discount code"});
     
     res.locals.discount = foundDiscount
     next()
