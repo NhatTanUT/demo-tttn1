@@ -57,12 +57,20 @@ async function main(){
         // console.log(lastSunday.toLocaleString());
 
         // const foundOrder = await db.collection("orders").find({"Datetime": {$lte: lastSunday, $gte: lastMonday}}).toArray()
-
+        
+        // console.log(foundOrder);
+        
+        //lay order theo thang
+        // let dateNow = new Date()
+        // let firstDate = new Date(dateNow.getFullYear(), dateNow.getMonth(), 1)
+        // let lastDate = new Date(dateNow.getFullYear(), dateNow.getMonth() + 1, 0)
+        // console.log(firstDate.toLocaleString());
+        // console.log(lastDate.toLocaleString());
+        // const foundOrder = await db.collection("orders").find({"Datetime": {$lte: lastDate, $gte: firstDate}}).toArray()
+        
         // console.log(foundOrder);
 
-        //lay order theo thang
-        
-
+        // lay order theo ngay
         
     } catch (e) {
         console.error(e);
