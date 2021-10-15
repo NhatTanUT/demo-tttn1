@@ -964,7 +964,8 @@ class UserController {
       if (res.locals.discount) {
         return res.json(res.locals.discount)
       }
-      return res.status(500).json({ msg: "Cant find discount1" });
+      else 
+        return res.status(500).json({ msg: "Cant find discount1" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
