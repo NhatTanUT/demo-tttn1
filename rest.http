@@ -1,4 +1,7 @@
-POST https://web-demo.online/admin/notify
+@host = http://localhost:3000
+
+###
+POST {{host}}/admin/notify
 content-type: application/json
 
 {
@@ -9,7 +12,7 @@ content-type: application/json
 
 ###
 
-POST https://localhost:3000/admin/notify_banner
+POST {{host}}/admin/notify_banner
 content-type: application/json
 
 {
@@ -18,7 +21,7 @@ content-type: application/json
 }
 
 ###
-PATCH http://localhost:3000/admin/product
+PATCH {{host}}/admin/product
 Content-Type: application/json
 
 {
@@ -29,7 +32,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH https://web-demo.online/admin/category
+PATCH {{host}}/admin/category
 Content-Type: application/json
 
 {
@@ -43,7 +46,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/admin/category
+POST {{host}}/admin/category
 Content-Type: application/json
 
 {
@@ -56,7 +59,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/admin/product
+POST {{host}}/admin/product
 Content-Type: application/json
 
 {
@@ -73,7 +76,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/admin/category
+DELETE {{host}}/admin/category
 Content-Type: application/json
 
 {
@@ -81,7 +84,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/admin/product
+DELETE {{host}}/admin/product
 Content-Type: application/json
 
 {
@@ -89,7 +92,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:3000/admin/user
+PATCH {{host}}/admin/user
 Content-Type: application/json
 
 {
@@ -109,7 +112,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE https://web-demo.online/admin/user
+DELETE {{host}}/admin/user
 Content-Type: application/json
 
 {
@@ -117,7 +120,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE https://web-demo.online/admin/order
+DELETE {{host}}/admin/order
 Content-Type: application/json
 
 {
@@ -125,7 +128,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/admin/discount
+POST {{host}}/admin/discount
 Content-Type: application/json
 
 {
@@ -137,7 +140,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/checkDiscount
+POST {{host}}/checkDiscount
 Content-Type: application/json
 
 {
@@ -145,7 +148,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/admin/user
+POST {{host}}/admin/user
 Content-Type: application/json
 
 {
@@ -159,10 +162,10 @@ Content-Type: application/json
 }
 
 ###
-GET https://web-demo.online/admin/discount
+GET {{host}}/admin/discount
 
 ###
-PATCH http://localhost:3000/admin/discount  
+PATCH {{host}}/admin/discount  
 Content-Type: application/json
 
 {
@@ -172,7 +175,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://web-demo.online/admin/register
+POST {{host}}/admin/register
 Content-Type: application/json
 
 {
@@ -185,7 +188,7 @@ Content-Type: application/json
 }
 
 ###
-POST https://web-demo.online/addOrder
+POST {{host}}/addOrder
 Content-Type: application/json
 
 {
@@ -221,7 +224,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/login
+POST {{host}}/login
 Content-Type: application/json
 
 {
@@ -230,6 +233,10 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/wishlist
+GET {{host}}/wishlist
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjk0NGVlZThkZThhOWQ2NjJiOGUwOCIsImlhdCI6MTYzNDI4ODkwOCwiZXhwIjoxNjM0Mzc1MzA4fQ.gbTC7ndB7ACZS4U9OHSNNfuPaH6iscWiZyo0hV7z1zg
+
+
+###
+GET {{host}}/admin/user
