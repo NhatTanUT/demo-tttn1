@@ -131,7 +131,7 @@ Content-Type: application/json
 {
     "code": "HELLOWORLD",
     "expireDate": "Mon Oct 13 2021 13:44:00 GMT+0700 (Indochina Time)",
-    "startDate": "Mon Oct 14 2021 13:44:00 GMT+0700 (Indochina Time)",
+    "startDate": "Mon Oct 13 2021 13:44:00 GMT+0700 (Indochina Time)",
     "amount": 50
 
 }
@@ -141,7 +141,7 @@ POST http://localhost:3000/checkDiscount
 Content-Type: application/json
 
 {
-    "code": ""
+    "code": "3131"
 }
 
 ###
@@ -179,7 +179,7 @@ Content-Type: application/json
     "email": "tvnt221@gmail.com",
     "firstName": "Nhat",
     "lastName": "Tan",
-    "role": "user",
+    "role": "admin",
     "gender": "Male",
     "phonenumber": "45634536534"
 }
@@ -189,33 +189,47 @@ POST https://web-demo.online/addOrder
 Content-Type: application/json
 
 {
-        "orderItems": [{
-            "idProduct": "61124f8570dfe42c98e9925f",
-            "name": "ssvsdvdsvd",
-            "quantity": 1,
-            "price": 12.98
-        }, 
-        {
-            "idProduct": "61125d55516b371f38dc04d4",
-            "name": "ssvsdvdsvd",
-            "quantity": 1,
-            "price": 12.98
-        }],
-        "idUser": "615331ffc7dc43e2e5c84f45",
-        "total": 12.5,
-        "discount": "",
-        "email": "nhattan24121999@gmail.com",
-        "firstName": "123456",
-        "lastName": "123456",
-        "company": "",
-        "address": "Ho Chi Minh",
-        "apartment": "",
-        "city": "Ho Chi Minh",
-        "country": "Viet Nam",
-        "postalCode": "123456",
-        "phone": "123456",
-        "number": 4242424242424242,
-        "exp_month": 12,
-        "exp_year": 2025,
-        "cvc": 522
-      }
+    "orderItems": [{
+        "idProduct": "61124f8570dfe42c98e9925f",
+        "name": "ssvsdvdsvd",
+        "quantity": 1,
+        "price": 12.98
+    }, 
+    {
+        "idProduct": "61125d55516b371f38dc04d4",
+        "name": "ssvsdvdsvd",
+        "quantity": 1,
+        "price": 12.98
+    }],
+    "idUser": "615331ffc7dc43e2e5c84f45",
+    "total": 12.5,
+    "discount": "",
+    "email": "nhattan24121999@gmail.com",
+    "firstName": "123456",
+    "lastName": "123456",
+    "company": "",
+    "address": "Ho Chi Minh",
+    "apartment": "",
+    "city": "Ho Chi Minh",
+    "country": "Viet Nam",
+    "postalCode": "123456",
+    "phone": "123456",
+    "number": 4242424242424242,
+    "exp_month": 12,
+    "exp_year": 2025,
+    "cvc": 522
+}
+
+###
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "email": "tvnt221@gmail.com",
+    "password": "700621"
+}
+
+###
+GET http://localhost:3000/wishlist
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjk0NGVlZThkZThhOWQ2NjJiOGUwOCIsImlhdCI6MTYzNDI4ODkwOCwiZXhwIjoxNjM0Mzc1MzA4fQ.gbTC7ndB7ACZS4U9OHSNNfuPaH6iscWiZyo0hV7z1zg

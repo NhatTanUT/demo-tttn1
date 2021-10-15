@@ -960,6 +960,7 @@ class UserController {
   }
   async check_Discount(req, res) {
     try {
+  
       if (res.locals.discount) {
         return res.json(res.locals.discount)
       }

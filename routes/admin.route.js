@@ -2,13 +2,13 @@ const express = require('express')
 const route = express.Router()
 
 const auth = require('../middleware/auth')
-const {auth_admin} = require('../middleware/decentralization')
+const {auth_role} = require('../middleware/decentralization')
 const upload = require('../middleware/upload')
 const upload_rar = require('../middleware/upload_rar')
 
 const AdminController = require('../controller/admin.controller')
 
-route.get('/', (req, res) => {
+route.get('/', auth, auth_role(['admin']), (req, res) => {
     res.render('admin')
 })
 
