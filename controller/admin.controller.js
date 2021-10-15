@@ -544,6 +544,12 @@ class AdminController {
       // });
       // console.log(expireDate);
       // console.log(startDate);
+
+      if (startDate >= expireDate) {
+        return res.status(500).json({ msg: "Expire date must > start date" });
+
+      }
+
       if (amount < 0) {
         return res.status(500).json({ msg: "Amount must >= 0" });
       }
@@ -657,8 +663,8 @@ class AdminController {
       const {code, startDate, expireDate, amount} = req.body
       
       if (startDate && expireDate) {
-        if (new Date(startDate) <= new Date(expireDate)) {
-          return res.status(500).json({msg: "startDate must > expireDate"})
+        if (new Date(startDate) >= new Date(expireDate)) {
+          return res.status(500).json({msg: "startDate must < expireDate"})
         }
       }
 

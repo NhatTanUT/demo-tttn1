@@ -130,8 +130,8 @@ Content-Type: application/json
 
 {
     "code": "HELLOWORLD",
-    "expireDate": "Mon Oct 15 2021 13:44:00 GMT+0700 (Indochina Time)",
-    "startDate": "Mon Oct 11 2021 13:44:00 GMT+0700 (Indochina Time)",
+    "expireDate": "Mon Oct 13 2021 13:44:00 GMT+0700 (Indochina Time)",
+    "startDate": "Mon Oct 14 2021 13:44:00 GMT+0700 (Indochina Time)",
     "amount": 50
 
 }
