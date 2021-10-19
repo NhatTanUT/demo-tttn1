@@ -559,6 +559,8 @@ class AdminController {
       if (foundDiscount)
         return res.status(500).json({ msg: "Discount code has already exist" });
 
+      code = code.toLowerCase()
+      
       let newDiscount = new Discount({
         code,
         expireDate,
@@ -760,28 +762,28 @@ class AdminController {
     try {
     
       // default get revenue today
-      if (!req.query.type || req.query.type === 'day') {
-        // const getDay = new Date().getDay()
-        let dateNow = new Date()
-        dateNow.setHours(0, 0, 0, 0)
+      // if (!req.query.type || req.query.type === 'day') {
+      //   // const getDay = new Date().getDay()
+      //   let dateNow = new Date()
+      //   dateNow.setHours(0, 0, 0, 0)
 
-        var firstDay = new Date(dateNow)
+      //   var firstDay = new Date(dateNow)
 
-        var lastDay = new Date(dateNow.setDate(dateNow.getDate() + 1));
-      }
-      else if (req.query.type === 'week') {
-        const getDay = new Date().getDay()
-        let dateNow = new Date()
-        dateNow.setHours(0, 0, 0, 0)
+      //   var lastDay = new Date(dateNow.setDate(dateNow.getDate() + 1));
+      // }
+      // else if (req.query.type === 'week') {
+      //   const getDay = new Date().getDay()
+      //   let dateNow = new Date()
+      //   dateNow.setHours(0, 0, 0, 0)
 
-        var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDay + 1));
+      //   var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDay + 1));
 
-        dateNow = new Date()
-        dateNow.setHours(0,0,0,0)
-        var lastDay = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay) + 1));
+      //   dateNow = new Date()
+      //   dateNow.setHours(0,0,0,0)
+      //   var lastDay = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay) + 1));
 
-      }
-      else if (req.query.type === 'month') {
+      // }
+      // else if (req.query.type === 'month') {
         const getDate = new Date().getDate()
         let dateNow = new Date()
         dateNow.setHours(0, 0, 0, 0)
@@ -790,18 +792,18 @@ class AdminController {
 
         var lastDay = new Date(dateNow.setMonth(dateNow.getMonth() + 1));
         lastDay.setDate(1)
-      }
-      else if (req.query.type === 'year') {
-        let dateNow = new Date()
-        dateNow.setHours(0, 0, 0, 0)
+      // }
+      // else if (req.query.type === 'year') {
+      //   let dateNow = new Date()
+      //   dateNow.setHours(0, 0, 0, 0)
 
-        var firstDay = new Date(dateNow.getFullYear(), 0, 1);
+      //   var firstDay = new Date(dateNow.getFullYear(), 0, 1);
 
-        dateNow = new Date()
-        dateNow.setHours(0, 0, 0, 0)
+      //   dateNow = new Date()
+      //   dateNow.setHours(0, 0, 0, 0)
 
-        var lastDay = new Date(dateNow.getFullYear() + 1, 0, 1);
-      }
+      //   var lastDay = new Date(dateNow.getFullYear() + 1, 0, 1);
+      // }
 
       // console.log(firstDay.toLocaleString());
       // console.log(lastDay.toLocaleString());
@@ -833,7 +835,7 @@ class AdminController {
       return res.json({
         sum: sum,
         count: foundOrder.length,
-        type: req.query.type,
+        // type: req.query.type,
         orders: foundOrder,
       });
     } catch (error) {

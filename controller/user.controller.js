@@ -461,8 +461,6 @@ class UserController {
         orderItems,
         idUser,
         Datetime,
-        total,
-        discount,
         email,
         firstName,
         lastName,
@@ -477,6 +475,22 @@ class UserController {
 
       let status = "Unpaid"
 
+      let total = 0;
+      for (let el of orderItems) {
+        total += el.price
+      }
+
+      let foundDiscount = res.locals.foundDiscount
+      
+      // total = Number.parseInt(total)
+      let discount = ""
+
+      if (foundDiscount) {
+        discount = foundDiscount.code
+        total = Math.round(total * Number(foundDiscount.amount)) / 100;
+      }
+
+      
       const newOrder = new Order({
         OrderItems: orderItems,
         status,
@@ -498,13 +512,17 @@ class UserController {
 
       newOrder.save();
 
+      if (!newOrder) {
+        return res.status(500).json({ msg: 'Cant create order' });
+      }
+
       for (let el of newOrder.OrderItems) {
         await Product.updateOne({_id: el.idProduct}, {$inc: {count: 1}})
       }
 
       res.locals.newOrder = newOrder;
       // res.json({ msg: "Add order success", order: newOrder });
-      next();
+      return next();
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: error.message });
@@ -748,20 +766,9 @@ class UserController {
         number,
         exp_month,
         exp_year,
-        cvc,
-        total
+        cvc
       } = req.body;
       // const id = req.user._id;
-      let discount = res.locals.discount
-
-      total = Number.parseInt(total)
-
-      let amount
-
-      if (discount)
-        amount = Math.round(total * discount.amount)
-      else
-        amount = total * 100
 
       
       const customer = await stripe.customers.create({
@@ -786,8 +793,8 @@ class UserController {
       token = await stripe.tokens.create(param);
 
       const charge = await stripe.charges.create({
-        amount,
-        description: "test",
+        amount: res.locals.newOrder.total * 100,
+        description: "Order #" + res.locals.newOrder._id,
         currency: "usd",
         source: token.id,
       });
@@ -806,7 +813,7 @@ class UserController {
       }
 
 
-      next()
+      return next()
     } catch (error) {
       console.log(error.message);
       return res.status(500).json({ msg: error.message });
@@ -965,8 +972,8 @@ class UserController {
   async check_Discount(req, res) {
     try {
   
-      if (res.locals.discount) {
-        return res.json(res.locals.discount)
+      if (res.locals.foundDiscount) {
+        return res.json(res.locals.foundDiscount)
       }
       else 
         return res.status(500).json({ msg: "Cant find discount1" });
