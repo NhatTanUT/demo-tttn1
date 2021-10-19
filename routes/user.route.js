@@ -20,7 +20,7 @@ route.get('/product', UserController.getProducts);
 route.get('/product/:productId', UserController.getProduct)
 route.get('/category', UserController.getCategories)
 // route.get('/previewImage', UserController.getPreviewImage)
-route.post('/addOrder', checkDiscount, UserController.addOrder, UserController.checkout/*, UserController.sendMailOrder*/);
+route.post('/addOrder', checkDiscount, UserController.addOrder, UserController.checkout, UserController.sendMailOrder);
 route.get('/order', auth, auth_role(['user']), UserController.getOrders)
 route.post('/resetPassword', UserController.sendResetPassword)
 route.get('/resetPassword/:id/:tokenResetPassword', UserController.getResetPassword)
