@@ -1,11 +1,12 @@
 @host = http://localhost:3000
+@host1 = https://web-demo.online
 
 ###
 POST {{host}}/admin/notify
 content-type: application/json
 
 {
-    "listUser": ["61549170d86e7a2ba4af28ed", "615331ffc7dc43e2e5c84f45"],
+    "listUser": ["61549170d86e7a2ba4af28ed", "616590ce2cf0c93c3f9153ce"],
     "content": "Hello"
 
 }
@@ -197,12 +198,6 @@ Content-Type: application/json
         "name": "ssvsdvdsvd",
         "quantity": 1,
         "price": 12.98
-    }, 
-    {
-        "idProduct": "61125d55516b371f38dc04d4",
-        "name": "ssvsdvdsvd",
-        "quantity": 1,
-        "price": 12.98
     }],
     "idUser": "615331ffc7dc43e2e5c84f45",
     "total": 12.5,
@@ -240,3 +235,6 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjk0NGVlZThkZThh
 
 ###
 GET {{host}}/admin/user
+
+###
+GET {{host}}/admin/revenue?type=week

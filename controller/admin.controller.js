@@ -765,6 +765,72 @@ class AdminController {
       
     }
   }
+  async statisticRevenue(req, res) {
+    try {
+      // default get revenue today
+      if (!req.query.type || req.query.type === 'day') {
+        // const getDay = new Date().getDay()
+        let dateNow = new Date()
+        dateNow.setHours(0, 0, 0, 0)
+
+        var firstDay = new Date(dateNow)
+        
+        var lastDay = new Date(dateNow.setDate(dateNow.getDate() + 1));
+      } 
+      else if (req.query.type === 'week') {
+        const getDay = new Date().getDay()
+        let dateNow = new Date()
+        dateNow.setHours(0, 0, 0, 0)
+        
+        var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDay + 1));
+        
+        dateNow = new Date()
+        dateNow.setHours(0,0,0,0)
+        var lastDay = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay) + 1));
+        
+      }
+      else if (req.query.type === 'month') {
+        const getDate = new Date().getDate()
+        let dateNow = new Date()
+        dateNow.setHours(0, 0, 0, 0)
+        
+        var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDate + 1));
+        
+        var lastDay = new Date(dateNow.setMonth(dateNow.getMonth() + 1));
+        lastDay.setDate(1)
+      }
+      else if (req.query.type === 'year') {
+        let dateNow = new Date()
+        dateNow.setHours(0, 0, 0, 0)
+        
+        var firstDay = new Date(dateNow.getFullYear(), 0, 1);
+
+        dateNow = new Date()
+        dateNow.setHours(0, 0, 0, 0)
+        
+        var lastDay = new Date(dateNow.getFullYear() + 1, 0, 1);
+      }
+
+      // console.log(firstDay.toLocaleString());
+      // console.log(lastDay.toLocaleString());
+
+      let foundOrder = await Order.find({"Datetime": {$lt: lastDay, $gte: firstDay}})
+
+      let sum = 0
+
+      for (let el of foundOrder) {
+        sum += el.total
+      }
+
+      sum = Math.round(sum * 100) / 100
+      
+      return res.json({ sum: sum, count: foundOrder.length, time: req.query.type, orders: foundOrder });
+      
+    } catch (error) {
+      return res.status(500).json({ msg: error.message });
+      
+    }
+  }
 }
 
 module.exports = new AdminController();

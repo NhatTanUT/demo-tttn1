@@ -340,7 +340,7 @@ class UserController {
     try {
       const id = req.user._id;
       const orders = await Order.find({ idUser: id }).lean();
-
+      
       res.json(orders);
     } catch (error) {
       return res.status(500).json({ msg: error.message });
@@ -497,6 +497,10 @@ class UserController {
       });
 
       newOrder.save();
+
+      for (let el of newOrder.OrderItems) {
+        await Product.updateOne({_id: el.idProduct}, {$inc: {count: 1}})
+      }
 
       res.locals.newOrder = newOrder;
       // res.json({ msg: "Add order success", order: newOrder });

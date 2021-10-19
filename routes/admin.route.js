@@ -7,6 +7,7 @@ const upload = require('../middleware/upload')
 const upload_rar = require('../middleware/upload_rar')
 
 const AdminController = require('../controller/admin.controller')
+const { Admin } = require('mongodb')
 
 router.get('/', auth, auth_role(['admin']), (req, res) => {
     res.render('admin')
@@ -51,6 +52,8 @@ router.post('/notify_banner', AdminController.sendNotificationBanner)
 // route.post('/removeNotify', AdminController.removeNotify)
 
 router.post('/uploadrar', upload_rar.single('file'), AdminController.uploadRar)
+
+router.get('/revenue', AdminController.statisticRevenue)
 
 
 module.exports = router
