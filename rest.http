@@ -197,7 +197,12 @@ Content-Type: application/json
         "idProduct": "61124f8570dfe42c98e9925f",
         "name": "ssvsdvdsvd",
         "quantity": 1,
-        "price": 12.98
+        "price": 10
+    }, {
+        "idProduct": "611ca8c435f54f9329280f50",
+        "name": "sdifkjsdhkds",
+        "quantity": 2,
+        "price": 14
     }],
     "idUser": "615331ffc7dc43e2e5c84f45",
     "total": 12.5,
@@ -237,4 +242,4 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjk0NGVlZThkZThh
 GET {{host}}/admin/user
 
 ###
-GET {{host}}/admin/revenue?type=week
+GET {{host}}/admin/revenue?type=year

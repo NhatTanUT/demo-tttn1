@@ -5,11 +5,14 @@ const Category = require("../models/category.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const Discount = require("../models/discount.model");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 
 const mailer = require("../utils/mailer");
 const { io, getClientOnline } = require("../app");
-const {createAccessToken, createRefreshToken} = require('../utils/createToken')
+const {
+  createAccessToken,
+  createRefreshToken,
+} = require("../utils/createToken");
 const mongoose = require("mongoose");
 const { sendMail } = require("../utils/mailer");
 
@@ -45,28 +48,26 @@ class AdminController {
     try {
       let update = req.body;
 
-      delete update.rate
-      
-      if (!req.files) {
-        return res.status(500).json({ msg: 'Must have img product' });  
-      }
-      
-      update.img = process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
-      
+      delete update.rate;
 
-      let previewImage = []
+      if (!req.files) {
+        return res.status(500).json({ msg: "Must have img product" });
+      }
+
+      update.img =
+        process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
+
+      let previewImage = [];
       if (req.files.previewImage) {
         for (let el of req.files.previewImage) {
-          let img = process.env.HOST_WEB + "uploads/" + el.filename
-          previewImage.push(img)
+          let img = process.env.HOST_WEB + "uploads/" + el.filename;
+          previewImage.push(img);
         }
-
       }
-      
+
       let newProduct = new Product({
         ...update,
-        previewImage
-        
+        previewImage,
       });
       await newProduct.save();
       return res.json({ msg: "Add product success", product: newProduct });
@@ -78,7 +79,7 @@ class AdminController {
 
   async addCategory(req, res) {
     try {
-      const {products, name } = req.body;
+      const { products, name } = req.body;
       let newCategory = new Category({
         products,
         name,
@@ -94,31 +95,30 @@ class AdminController {
   async updateProduct(req, res) {
     try {
       let update = req.body;
-      delete update.rate
+      delete update.rate;
 
       if (req.files) {
         if (req.files.previewImage) {
-          update.previewImage = []
+          update.previewImage = [];
           for (let el of req.files.previewImage) {
-            let img = process.env.HOST_WEB + "uploads/" + el.filename
-            update.previewImage.push(img)
+            let img = process.env.HOST_WEB + "uploads/" + el.filename;
+            update.previewImage.push(img);
           }
         }
         if (req.files.img) {
-          update.img = process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
-
+          update.img =
+            process.env.HOST_WEB + "uploads/" + req.files.img[0].filename;
         }
       }
 
       // console.log(update);
       const foundProduct = await Product.updateOne(
-        { id: (update.idProduct) },
+        { id: update.idProduct },
         { $set: update }
       );
       if (foundProduct.matchedCount === 1)
         return res.json({ msg: "Update product success", update });
       else return res.status(500).json({ msg: "Cant find productid" });
-
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: error.message });
@@ -127,7 +127,7 @@ class AdminController {
   async updateCategory(req, res) {
     try {
       const { idCategory, update } = req.body;
-      delete update.id
+      delete update.id;
       const foundCategory = await Category.updateOne(
         { _id: mongoose.Types.ObjectId(idCategory) },
         { $set: { ...update } }
@@ -135,9 +135,8 @@ class AdminController {
 
       if (foundCategory.matchedCount === 1)
         return res.json({ msg: "Update category success", idCategory, update });
-      else 
-        return res.status(500).json({msg: "Cant find category"})
-      } catch (error) {
+      else return res.status(500).json({ msg: "Cant find category" });
+    } catch (error) {
       return res.status(500).json({ msg: error.message });
     }
   }
@@ -496,7 +495,6 @@ class AdminController {
         { _id: mongoose.Types.ObjectId(idUser) },
         { $set: update }
       );
-      
 
       if (foundUser.matchedCount === 1)
         return res.json({ msg: "Update userid #" + idUser + " success" });
@@ -533,8 +531,7 @@ class AdminController {
   }
   async addDiscount(req, res) {
     try {
-      let { code,expireDate, startDate, amount } =
-        req.body;
+      let { code, expireDate, startDate, amount } = req.body;
 
       // expireDate = new Date(expireDate).toLocaleString("en-US", {
       //   timeZone: "Asia/Ho_Chi_Minh",
@@ -547,7 +544,6 @@ class AdminController {
 
       if (startDate >= expireDate) {
         return res.status(500).json({ msg: "Expire date must > start date" });
-
       }
 
       if (amount < 0) {
@@ -558,16 +554,16 @@ class AdminController {
         return res.status(500).json({ msg: "Amount must < 100" });
       }
 
-      const foundDiscount = await Discount.findOne({code}).lean()
+      const foundDiscount = await Discount.findOne({ code }).lean();
 
-      if (foundDiscount) 
-        return res.status(500).json({msg: "Discount code has already exist"})
+      if (foundDiscount)
+        return res.status(500).json({ msg: "Discount code has already exist" });
 
       let newDiscount = new Discount({
         code,
         expireDate,
         startDate,
-        amount
+        amount,
       });
 
       await newDiscount.save();
@@ -578,16 +574,15 @@ class AdminController {
   }
   async removeDiscount(req, res) {
     try {
-      const {code} = req.body
+      const { code } = req.body;
       const foundDiscount = await Discount.deleteOne({
-        code: code
+        code: code,
       });
       if (foundDiscount.deletedCount === 1)
         return res.json({ msg: "Delete discount " + code + " success" });
       else return res.status(500).json({ msg: "Cant find discount" });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async addUser(req, res) {
@@ -645,69 +640,66 @@ class AdminController {
       });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async getDiscount(req, res) {
     try {
-      const foundDiscount = await Discount.find().lean()
+      const foundDiscount = await Discount.find().lean();
 
-      return res.json({foundDiscount})
+      return res.json({ foundDiscount });
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async updateDiscount(req, res) {
     try {
-      const {code, startDate, expireDate, amount} = req.body
-      
+      const { code, startDate, expireDate, amount } = req.body;
+
       if (startDate && expireDate) {
         if (new Date(startDate) >= new Date(expireDate)) {
-          return res.status(500).json({msg: "startDate must < expireDate"})
+          return res.status(500).json({ msg: "startDate must < expireDate" });
         }
       }
 
-      if (!code || code === '') {
-        return res.status(500).json({msg: "Must have code"})
+      if (!code || code === "") {
+        return res.status(500).json({ msg: "Must have code" });
       }
 
       if (amount > 100) {
-        return res.status(500).json({msg: "Amount must < 100"})
+        return res.status(500).json({ msg: "Amount must < 100" });
       }
 
-      const foundDiscount = await Discount.updateOne({code: code}, {$set: {startDate, expireDate, amount}})
+      const foundDiscount = await Discount.updateOne(
+        { code: code },
+        { $set: { startDate, expireDate, amount } }
+      );
 
       if (foundDiscount.matchedCount === 1) {
-        return res.json({msg: "Update success", code, startDate, expireDate, amount})
+        return res.json({
+          msg: "Update success",
+          code,
+          startDate,
+          expireDate,
+          amount,
+        });
+      } else {
+        return res.status(500).json({ msg: "Cant find discount" });
       }
-      else {
-        return res.status(500).json({msg: "Cant find discount"})
-      }
-      
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async register(req, res, next) {
     try {
-      const {
-        email,
-        firstName,
-        lastName,
-        role,
-        gender,
-        DOB,
-        phonenumber,
-      } = req.body;
+      const { email, firstName, lastName, role, gender, DOB, phonenumber } =
+        req.body;
       // let newEmail = email.toLowerCase() // /g replace remove first element. /g to remove all (purpose: remove space)
 
       const foundEmail = await Users.findOne({ email: email });
       if (foundEmail)
         return res.status(400).json({ msg: "This email already registered. " });
 
-      let password =  Math.floor(Math.random() * (999999 - 100000) + 100000)
+      let password = Math.floor(Math.random() * (999999 - 100000) + 100000);
 
       const passwordHash = await bcrypt.hash(password.toString(), 12);
 
@@ -730,9 +722,9 @@ class AdminController {
       //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       // });
 
-      res.locals.password = password
-      res.locals.user = newUser
-      next()
+      res.locals.password = password;
+      res.locals.user = newUser;
+      next();
 
       return res.json({
         msg: "Register Success! ",
@@ -747,26 +739,26 @@ class AdminController {
   }
   async sendMailRegister(req, res) {
     try {
-      const user = res.locals.user
-      const password = res.locals.password
+      const user = res.locals.user;
+      const password = res.locals.password;
 
-      const to = user.email
-      const subject = "Register user"
+      const to = user.email;
+      const subject = "Register user";
       const body = `<p>Email: ${user.email}</p>
       <p>Firstname: ${user.firstName}</p>
       <p>Lastname: ${user.lastName}</p>
       <p>Password: ${password}</p>
       <p>Phonenumber: ${user.phonenumber}</p>
-      <p>Gender: ${user.gender}</p>`
+      <p>Gender: ${user.gender}</p>`;
 
-      return await sendMail(to, subject, body)
+      return await sendMail(to, subject, body);
     } catch (error) {
       return res.status(500).json({ msg: error.message });
-      
     }
   }
   async statisticRevenue(req, res) {
     try {
+    
       // default get revenue today
       if (!req.query.type || req.query.type === 'day') {
         // const getDay = new Date().getDay()
@@ -774,48 +766,62 @@ class AdminController {
         dateNow.setHours(0, 0, 0, 0)
 
         var firstDay = new Date(dateNow)
-        
+
         var lastDay = new Date(dateNow.setDate(dateNow.getDate() + 1));
-      } 
+      }
       else if (req.query.type === 'week') {
         const getDay = new Date().getDay()
         let dateNow = new Date()
         dateNow.setHours(0, 0, 0, 0)
-        
+
         var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDay + 1));
-        
+
         dateNow = new Date()
         dateNow.setHours(0,0,0,0)
         var lastDay = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay) + 1));
-        
+
       }
       else if (req.query.type === 'month') {
         const getDate = new Date().getDate()
         let dateNow = new Date()
         dateNow.setHours(0, 0, 0, 0)
-        
+
         var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDate + 1));
-        
+
         var lastDay = new Date(dateNow.setMonth(dateNow.getMonth() + 1));
         lastDay.setDate(1)
       }
       else if (req.query.type === 'year') {
         let dateNow = new Date()
         dateNow.setHours(0, 0, 0, 0)
-        
+
         var firstDay = new Date(dateNow.getFullYear(), 0, 1);
 
         dateNow = new Date()
         dateNow.setHours(0, 0, 0, 0)
-        
+
         var lastDay = new Date(dateNow.getFullYear() + 1, 0, 1);
       }
 
       // console.log(firstDay.toLocaleString());
       // console.log(lastDay.toLocaleString());
 
-      let foundOrder = await Order.find({"Datetime": {$lt: lastDay, $gte: firstDay}})
+      // let foundOrder = await Order.find({"Datetime": {$lt: lastDay, $gte: firstDay}})
 
+      
+      const foundOrder = await Order.aggregate([
+        { $match: { Datetime: { $lt: lastDay, $gte: firstDay } } },
+        {
+          $group: {
+            "_id": { $dateToString: { format: "%Y-%m-%d", date: "$Datetime" } },
+            total: {
+              $sum: "$total"
+            }
+          }
+        },
+        { $sort: { _id: 1 } }
+      ]);
+      
       let sum = 0
 
       for (let el of foundOrder) {
@@ -824,11 +830,15 @@ class AdminController {
 
       sum = Math.round(sum * 100) / 100
       
-      return res.json({ sum: sum, count: foundOrder.length, time: req.query.type, orders: foundOrder });
-      
+      return res.json({
+        sum: sum,
+        count: foundOrder.length,
+        type: req.query.type,
+        orders: foundOrder,
+      });
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ msg: error.message });
-      
     }
   }
 }
