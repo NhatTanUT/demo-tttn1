@@ -477,7 +477,7 @@ class UserController {
 
       let total = 0;
       for (let el of orderItems) {
-        total += el.price
+        total += Number(el.price)
       }
 
       let foundDiscount = res.locals.foundDiscount
@@ -517,8 +517,14 @@ class UserController {
       }
 
       for (let el of newOrder.OrderItems) {
-        await Product.updateOne({_id: el.idProduct}, {$inc: {count: 1}})
+        let foundProduct = await Product.updateOne({_id: el.idProduct}, {$inc: {count: 1}})
+        if (foundProduct.modifiedCount !== 1) {
+          return res.status(500).json({msg: "Cant increase count product"})
+        }
       }
+
+      let foundUser = await Users.updateOne({_id: newOrder.idUser}, {$set: {cart: []}})
+      // if (foundUser.modifiedCount !== 1) {}  //chua nhat thiet phai loi
 
       res.locals.newOrder = newOrder;
       // res.json({ msg: "Add order success", order: newOrder });
