@@ -189,7 +189,7 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/addOrder
+POST {{host1}}/addOrder
 Content-Type: application/json
 
 {

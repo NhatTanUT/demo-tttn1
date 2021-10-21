@@ -512,7 +512,7 @@ class UserController {
       }
 
       const newOrder = new Order({
-        
+        ...field
       });
 
       newOrder.save();
