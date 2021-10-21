@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const socketio = require("socket.io")
 const helmet = require('helmet')
+const createError = require('http-errors')
 
 const http = require('http');
 const app = express();
@@ -104,6 +105,17 @@ app.use("/", userRoute);
 
 const adminRoute = require('./routes/admin.route')
 app.use("/admin", adminRoute)
+
+// Error 404 - Not found
+app.use((req, res, next) => {
+  next(createError(404, "Not found"))
+})
+
+// Handle error
+app.use((err, req, res, next) => {
+  res.status(err.status || 500)
+  res.json({msg: err.message})
+})
 
 const PORT = process.env.PORT || 3000;
 
