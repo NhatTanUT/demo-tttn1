@@ -6,6 +6,8 @@ const {auth_role} = require('../middleware/decentralization')
 const upload = require('../middleware/upload')
 const upload_rar = require('../middleware/upload_rar')
 
+const createError = require('http-errors')
+
 const AdminController = require('../controller/admin.controller')
 const { Admin } = require('mongodb')
 
@@ -55,5 +57,8 @@ router.post('/uploadrar', upload_rar.single('file'), AdminController.uploadRar)
 
 router.get('/revenue', AdminController.statisticRevenue)
 
+router.get("/test", (req, res, next) => {
+    return next(createError.InternalServerError())
+})
 
 module.exports = router

@@ -7,7 +7,7 @@ const Item = require("../models/item.model");
 
 const {createAccessToken, createRefreshToken} = require('../utils/createToken')
 
-
+const createError = require('http-errors')
 const path = require("path");
 const mailer = require("../utils/mailer");
 const bcrypt = require("bcrypt");
@@ -16,7 +16,7 @@ const jwt = require("jsonwebtoken");
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 class UserController {
-  async register(req, res) {
+  async register(req, res, next) {
     try {
       const {
         email,
@@ -32,7 +32,7 @@ class UserController {
 
       const foundEmail = await Users.findOne({ email: email });
       if (foundEmail)
-        return res.status(400).json({ msg: "This email already registered. " });
+        return next(createError(400, "This email already registered. " ));
 
       if (password.length < 6)
         return res
@@ -82,21 +82,21 @@ class UserController {
         },
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async login(req, res) {
+  async login(req, res, next) {
     try {
       const { email, password } = req.body;
 
       const user = await Users.findOne({ email: email });
 
       if (!user)
-        return res.status(400).json({ msg: "This email does not exist." });
+        return next(createError(400, "This email does not exist." ));
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch)
-        return res.status(400).json({ msg: "Password is incorrect." });
+        return next(createError(400, "Password is incorrect." ));
 
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });
@@ -117,33 +117,33 @@ class UserController {
         },
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async logout(req, res) {
+  async logout(req, res, next) {
     try {
       res.clearCookie("refresh_token", { path: "/refresh_token" });
       return res.json({ msg: "Logged out!" });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getAccessToken(req, res) {
+  async getAccessToken(req, res, next) {
     try {
       const { refreshToken } = req.body;
       if (!refreshToken)
-        return res.status(400).json({ msg: "Please login now." });
+        return next(createError(400, "Please login now." ));
 
       jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         async (err, result) => {
-          if (err) return res.status(400).json({ msg: "Please login now." });
+          if (err) return next(createError(400, "Please login now." ));
 
           const user = await Users.findById(result.id).select("-password");
 
           if (!user)
-            return res.status(400).json({ msg: "This does not exist." });
+            return next(createError(400, "This does not exist." ));
 
           const access_token = createAccessToken({ id: result.id });
 
@@ -154,24 +154,24 @@ class UserController {
         }
       );
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getProducts(req, res) {
+  async getProducts(req, res, next) {
     const data = await Product.find({});
     return res.json({ count: data.length, entries: data });
   }
-  async getProduct(req, res) {
+  async getProduct(req, res, next) {
     const productid = req.params.productId;
     const data = await Product.find({ id: productid });
     return res.json(data);
   }
-  async getCategories(req, res) {
+  async getCategories(req, res, next) {
     const data = await Category.find({}).populate("products");
     return res.json({ count: data.length, entries: data });
   }
   
-  async changePassword(req, res) {
+  async changePassword(req, res, next) {
     try {
       const userId = req.user._id;
       const password = req.body.password;
@@ -196,18 +196,18 @@ class UserController {
 
       return res.json({ msg: "Change password success" });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendMail(req, res) {
+  async sendMail(req, res, next) {
     try {
       const { to, subject, body } = req.body;
       await mailer.sendMail(to, subject, body);
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendMailOrder(req, res) {
+  async sendMailOrder(req, res, next) {
     try {
       if (!res.locals.newOrder) console.log("Error");
       const newOrder = res.locals.newOrder;
@@ -333,26 +333,26 @@ class UserController {
       // ##############################################
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getOrders(req, res) {
+  async getOrders(req, res, next) {
     try {
       const id = req.user._id;
       const orders = await Order.find({ idUser: id }).lean();
       
       res.json(orders);
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendResetPassword(req, res) {
+  async sendResetPassword(req, res, next) {
     try {
       const { email } = req.body;
 
       const foundUser = await Users.findOne({ email: email }).lean();
       if (!foundUser) {
-        return res.status(500).json({ msg: "Not found email!" });
+        return next(createError(500, "Not found email!" ));
       }
 
       const secret = process.env.RESET_TOKEN_SECRET + foundUser.password;
@@ -518,13 +518,13 @@ class UserController {
       newOrder.save();
 
       if (!newOrder) {
-        return res.status(500).json({ msg: 'Cant create order' });
+        return next(createError(500, 'Cant create order' ));
       }
 
       for (let el of newOrder.OrderItems) {
         let foundProduct = await Product.updateOne({_id: el.idProduct}, {$inc: {count: 1}})
         if (foundProduct.modifiedCount !== 1) {
-          return res.status(500).json({msg: "Cant increase count product"})
+          return next(createError(500, 'Cant increase count product'))
         }
       }
 
@@ -539,26 +539,26 @@ class UserController {
       return next();
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getOrders(req, res) {
+  async getOrders(req, res, next) {
     try {
       const id = req.user._id;
       const orders = await Order.find({ idUser: id }).lean();
 
       res.json(orders);
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendResetPassword(req, res) {
+  async sendResetPassword(req, res, next) {
     try {
       const { email } = req.body;
 
       const foundUser = await Users.findOne({ email: email }).lean();
       if (!foundUser) {
-        return res.status(500).json({ msg: "Not found email!" });
+        return next(createError(500, "Not found email!" ));
       }
 
       const secret = process.env.RESET_TOKEN_SECRET + foundUser.password;
@@ -659,10 +659,10 @@ class UserController {
       await mailer.sendMail(to, subject, body);
       return res.json({ msg: "Link reset was sent to email!" });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async resetPassword(req, res) {
+  async resetPassword(req, res, next) {
     const { id, tokenResetPassword } = req.params;
     const { password } = req.body;
 
@@ -672,13 +672,13 @@ class UserController {
         .json({ msg: "Password must be at least 6 characters." });
 
     const foundUser = await Users.findOne({ _id: id });
-    if (!foundUser) return res.status(400).json({ msg: "Not found email. " });
+    if (!foundUser) return next(createError(400, "Not found email. " ));
 
     const user = jwt.verify(
       tokenResetPassword,
       process.env.RESET_TOKEN_SECRET + foundUser.password
     );
-    if (!user) return res.status(401).json({ msg: "Invalid Authentication." });
+    if (!user) return next(createError(401, "Invalid Authentication." ));
 
     const passwordHash = await bcrypt.hash(password, 12);
 
@@ -689,12 +689,12 @@ class UserController {
 
     return res.json({ msg: "Reset password success!" });
   }
-  async getResetPassword(req, res) {
+  async getResetPassword(req, res, next) {
     // var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     // res.render("resetPassword", {link: fullUrl});
     res.render("resetPassword");
   }
-  async getCart(req, res) {
+  async getCart(req, res, next) {
     try {
       const user = await Users.findOne({ _id: req.user._id })
         .populate("cart.idProduct")
@@ -702,17 +702,17 @@ class UserController {
 
       return res.json({ cart: user.cart });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async addCart(req, res) {
+  async addCart(req, res, next) {
     try {
       const { idProduct, quantity } = req.body;
 
       const foundUser = await Users.findOne({ _id: req.user._id });
 
       if (!foundUser)
-        return res.status(400).json({ msg: "Invalid Authentication." });
+        return next(createError(400, "Invalid Authentication." ));
 
       const cart = foundUser.cart;
 
@@ -746,10 +746,10 @@ class UserController {
         quantity,
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async removeCart(req, res) {
+  async removeCart(req, res, next) {
     try {
       const { idProduct } = req.body;
       const id = req.user._id;
@@ -768,7 +768,7 @@ class UserController {
 
       return res.json({ msg: "Remove item from cart success" });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
   async checkout(req, res, next) {
@@ -830,10 +830,10 @@ class UserController {
       return next()
     } catch (error) {
       console.log(error.message);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async changeInfo(req, res) {
+  async changeInfo(req, res, next) {
     try {
       const { firstName, lastName, phonenumber, gender, DOB } = req.body;
       const id = req.user._id;
@@ -863,23 +863,23 @@ class UserController {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async uploadFile(req, res) {
+  async uploadFile(req, res, next) {
     try {
       if (req.file) {
         return res
           .status(200)
           .send({ path: req.file.path, origin: req.file.originalname });
       } else {
-        return res.status(500).json({ msg: "Error" });
+        return next(createError(500, "Error" ));
       }
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getInfo(req, res) {
+  async getInfo(req, res, next) {
     try {
       const id = req.user._id;
 
@@ -890,10 +890,10 @@ class UserController {
 
       return res.json({ ...foundUser._doc });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async addWishlist(req, res) {
+  async addWishlist(req, res, next) {
     try {
       const id = req.user._id;
       const { idProduct } = req.body;
@@ -910,10 +910,10 @@ class UserController {
 
       return res.json({ msg: "Add wishlist success", id, idProduct });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getWishlist(req, res) {
+  async getWishlist(req, res, next) {
     try {
       const id = req.user._id;
       const foundUser = await Users.findOne({ _id: id }, "wishlist")
@@ -922,10 +922,10 @@ class UserController {
 
       return res.json({ ...foundUser });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async removeWishlist(req, res) {
+  async removeWishlist(req, res, next) {
     try {
       const id = req.user._id;
       const { idProduct } = req.body;
@@ -940,10 +940,10 @@ class UserController {
         idProduct,
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getNotification(req, res) {
+  async getNotification(req, res, next) {
     try {
       const id = req.user._id;
       const foundUser = await Users.findOne(
@@ -953,10 +953,10 @@ class UserController {
 
       return res.json({ ...foundUser._doc });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async downloadSource(req, res) {
+  async downloadSource(req, res, next) {
     try {
       const { idUser, idProduct } = req.params;
       const foundOrder = await Order.findOne({
@@ -980,19 +980,19 @@ class UserController {
         }
       }
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async check_Discount(req, res) {
+  async check_Discount(req, res, next) {
     try {
   
       if (res.locals.foundDiscount) {
         return res.json(res.locals.foundDiscount)
       }
       else 
-        return res.status(500).json({ msg: "Cant find discount1" });
+        return next(createError(500, "Cant find discount1" ));
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
 }

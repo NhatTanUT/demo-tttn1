@@ -244,4 +244,4 @@ GET {{host}}/admin/user
 GET {{host1}}/admin/revenue
 
 ###
-GET {{host}}/v1
+GET {{host}}/admin/test

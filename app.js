@@ -1,4 +1,4 @@
-const dotenv = require("dotenv");
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 var cors = require("cors");
@@ -7,13 +7,11 @@ const morgan = require("morgan");
 const socketio = require("socket.io")
 const helmet = require('helmet')
 const createError = require('http-errors')
+const logEvents = require('./utils/logEvents')
 
 const http = require('http');
 const app = express();
 const server = http.createServer(app)
-
-
-dotenv.config();
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
@@ -108,11 +106,12 @@ app.use("/admin", adminRoute)
 
 // Error 404 - Not found
 app.use((req, res, next) => {
-  next(createError(404, "Not found"))
+  next(createError.NotFound())
 })
 
-// Handle error
+// Handle error middleware
 app.use((err, req, res, next) => {
+  logEvents(`${req.url} -- ${req.method} \n ${err.message} \n\n ${JSON.stringify(req.body, null, 2)}`)
   res.status(err.status || 500)
   res.json({msg: err.message})
 })

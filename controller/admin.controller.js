@@ -14,10 +14,11 @@ const {
   createRefreshToken,
 } = require("../utils/createToken");
 const mongoose = require("mongoose");
+const createError = require('http-errors')
 const { sendMail } = require("../utils/mailer");
 
 class AdminController {
-  // async addPreview(req, res) {
+  // async addPreview(req, res, next) {
   //   try {
   //     const { idProduct } = req.body;
   //     let foundProduct = await Product.findOne({ _id: idProduct });
@@ -40,18 +41,18 @@ class AdminController {
   //       previewImg: foundProduct.previewImage,
   //     });
   //   } catch (error) {
-  //     return res.status(500).json({ msg: error.message });
+  //     return next(createError(500, error.message ));
   //   }
   // }
 
-  async addProduct(req, res) {
+  async addProduct(req, res, next) {
     try {
       let update = req.body;
 
       delete update.rate;
 
       if (!req.files) {
-        return res.status(500).json({ msg: "Must have img product" });
+        return next(createError(500, "Must have img product" ));
       }
 
       update.img =
@@ -73,11 +74,11 @@ class AdminController {
       return res.json({ msg: "Add product success", product: newProduct });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
 
-  async addCategory(req, res) {
+  async addCategory(req, res, next) {
     try {
       const { products, name } = req.body;
       let newCategory = new Category({
@@ -89,10 +90,10 @@ class AdminController {
       return res.json({ msg: "Add category success", newCategory });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async updateProduct(req, res) {
+  async updateProduct(req, res, next) {
     try {
       let update = req.body;
       delete update.rate;
@@ -118,13 +119,13 @@ class AdminController {
       );
       if (foundProduct.matchedCount === 1)
         return res.json({ msg: "Update product success", update });
-      else return res.status(500).json({ msg: "Cant find productid" });
+      else return next(createError(500, "Cant find productid" ));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async updateCategory(req, res) {
+  async updateCategory(req, res, next) {
     try {
       const { idCategory, update } = req.body;
       delete update.id;
@@ -135,30 +136,30 @@ class AdminController {
 
       if (foundCategory.matchedCount === 1)
         return res.json({ msg: "Update category success", idCategory, update });
-      else return res.status(500).json({ msg: "Cant find category" });
+      else return next(createError(500, "Cant find category" ));
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getAllUser(req, res) {
+  async getAllUser(req, res, next) {
     try {
       const allUser = await Users.find({}, "-password -cart");
 
       return res.json({ allUser });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getAllOrder(req, res) {
+  async getAllOrder(req, res, next) {
     try {
       const allOrder = await Order.find({});
 
       return res.json({ allOrder });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendMailWishList(req, res) {
+  async sendMailWishList(req, res, next) {
     try {
       const { idProduct, price } = req.body;
       const subject = "Your wishlist product has changed in price";
@@ -357,28 +358,28 @@ class AdminController {
         foundProduct,
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendPromotion(req, res) {
+  async sendPromotion(req, res, next) {
     try {
       const { content } = req.body;
 
       io.emit("Server-sent-notification", { content: content });
       return res.json({ msg: "Send promotion success", content });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getAllClientOnline(req, res) {
+  async getAllClientOnline(req, res, next) {
     try {
       const list = getClientOnline();
       return res.json({ client: list });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendNotification(req, res) {
+  async sendNotification(req, res, next) {
     try {
       const { listUser, content } = req.body;
 
@@ -411,10 +412,10 @@ class AdminController {
       });
       return res.json({ msg: "Send notification", listUser, content });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendNotificationBanner(req, res) {
+  async sendNotificationBanner(req, res, next) {
     try {
       const { content } = req.body;
       io.emit("Server-sent-notification", {
@@ -423,18 +424,18 @@ class AdminController {
       return res.json({ msg: "Send notification", content });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  // async removeNotify(req, res) {
+  // async removeNotify(req, res, next) {
   //   try {
 
   //   } catch (error) {
-  //     return res.status(500).json({ msg: error.message });
+  //     return next(createError(500, error.message ));
 
   //   }
   // }
-  async uploadRar(req, res) {
+  async uploadRar(req, res, next) {
     try {
       const { idProduct } = req.body;
       const source = "/uploads_rar/" + req.file.filename;
@@ -446,10 +447,10 @@ class AdminController {
         source,
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async removeProduct(req, res) {
+  async removeProduct(req, res, next) {
     try {
       const { idProduct } = req.body;
       const foundProduct = await Product.deleteOne({
@@ -458,13 +459,13 @@ class AdminController {
       if (foundProduct.deletedCount === 1)
         return res.json({ msg: "Delete productId #" + idProduct + " success" });
       else {
-        return res.status(500).json({ msg: "Can't find productid" });
+        return next(createError(500, "Can't find productid" ));
       }
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async removeCategory(req, res) {
+  async removeCategory(req, res, next) {
     try {
       const { idCategory } = req.body;
       const foundCategory = await Category.deleteOne({
@@ -473,13 +474,13 @@ class AdminController {
       if (foundCategory.deletedCount === 1)
         return res.json({ msg: "Delete category #" + idCategory + " success" });
       else {
-        return res.status(500).json({ msg: "Can't find categoryid" });
+        return next(createError(500, "Can't find categoryid" ));
       }
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async updateUser(req, res) {
+  async updateUser(req, res, next) {
     try {
       const { idUser, update } = req.body;
 
@@ -498,12 +499,12 @@ class AdminController {
 
       if (foundUser.matchedCount === 1)
         return res.json({ msg: "Update userid #" + idUser + " success" });
-      else return res.status(500).json({ msg: "Cant find userid" });
+      else return next(createError(500, "Cant find userid" ));
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async deleteUser(req, res) {
+  async deleteUser(req, res, next) {
     try {
       const { idUser } = req.body;
       const foundUser = await Users.deleteOne({
@@ -511,12 +512,12 @@ class AdminController {
       });
       if (foundUser.deletedCount === 1)
         return res.json({ msg: "Delete userid #" + idUser + " success" });
-      else return res.status(500).json({ msg: "Cant find userid" });
+      else return next(createError(500, "Cant find userid" ));
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async removeOrder(req, res) {
+  async removeOrder(req, res, next) {
     try {
       const { idOrder } = req.body;
       const foundOrder = await Order.deleteOne({
@@ -524,12 +525,12 @@ class AdminController {
       });
       if (foundOrder.deletedCount === 1)
         return res.json({ msg: "Delete orderid #" + idOrder + " success" });
-      else return res.status(500).json({ msg: "Cant find orderid" });
+      else return next(createError(500, "Cant find orderid" ));
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async addDiscount(req, res) {
+  async addDiscount(req, res, next) {
     try {
       let { code, expireDate, startDate, amount } = req.body;
 
@@ -543,21 +544,21 @@ class AdminController {
       // console.log(startDate);
 
       if (startDate >= expireDate) {
-        return res.status(500).json({ msg: "Expire date must > start date" });
+        return next(createError(500, "Expire date must > start date" ));
       }
 
       if (amount < 0) {
-        return res.status(500).json({ msg: "Amount must >= 0" });
+        return next(createError(500, "Amount must >= 0" ));
       }
 
       if (amount > 100) {
-        return res.status(500).json({ msg: "Amount must < 100" });
+        return next(createError(500, "Amount must < 100" ));
       }
 
       const foundDiscount = await Discount.findOne({ code }).lean();
 
       if (foundDiscount)
-        return res.status(500).json({ msg: "Discount code has already exist" });
+        return next(createError(500, "Discount code has already exist" ));
 
       code = code.toLowerCase()
       
@@ -571,10 +572,10 @@ class AdminController {
       await newDiscount.save();
       return res.json({ msg: "New discount: " + code });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async removeDiscount(req, res) {
+  async removeDiscount(req, res, next) {
     try {
       const { code } = req.body;
       const foundDiscount = await Discount.deleteOne({
@@ -582,12 +583,12 @@ class AdminController {
       });
       if (foundDiscount.deletedCount === 1)
         return res.json({ msg: "Delete discount " + code + " success" });
-      else return res.status(500).json({ msg: "Cant find discount" });
+      else return next(createError(500, "Cant find discount" ));
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async addUser(req, res) {
+  async addUser(req, res, next) {
     try {
       const {
         email,
@@ -641,34 +642,34 @@ class AdminController {
         },
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async getDiscount(req, res) {
+  async getDiscount(req, res, next) {
     try {
       const foundDiscount = await Discount.find().lean();
 
       return res.json({ foundDiscount });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async updateDiscount(req, res) {
+  async updateDiscount(req, res, next) {
     try {
       const { code, startDate, expireDate, amount } = req.body;
 
       if (startDate && expireDate) {
         if (new Date(startDate) >= new Date(expireDate)) {
-          return res.status(500).json({ msg: "startDate must < expireDate" });
+          return next(createError(500, "startDate must < expireDate" ));
         }
       }
 
       if (!code || code === "") {
-        return res.status(500).json({ msg: "Must have code" });
+        return next(createError(500, "Must have code" ));
       }
 
       if (amount > 100) {
-        return res.status(500).json({ msg: "Amount must < 100" });
+        return next(createError(500, "Amount must < 100" ));
       }
 
       const foundDiscount = await Discount.updateOne(
@@ -685,10 +686,10 @@ class AdminController {
           amount,
         });
       } else {
-        return res.status(500).json({ msg: "Cant find discount" });
+        return next(createError(500, "Cant find discount" ));
       }
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
   async register(req, res, next) {
@@ -736,10 +737,10 @@ class AdminController {
         },
       });
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async sendMailRegister(req, res) {
+  async sendMailRegister(req, res, next) {
     try {
       const user = res.locals.user;
       const password = res.locals.password;
@@ -755,10 +756,10 @@ class AdminController {
 
       return await sendMail(to, subject, body);
     } catch (error) {
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
-  async statisticRevenue(req, res) {
+  async statisticRevenue(req, res, next) {
     try {
     
       // default get revenue today
@@ -840,7 +841,7 @@ class AdminController {
       });
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: error.message });
+      return next(createError(500, error.message ));
     }
   }
 }
