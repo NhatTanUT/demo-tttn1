@@ -241,4 +241,4 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjk0NGVlZThkZThh
 GET {{host}}/admin/user
 
 ###
-GET {{host}}/admin/revenue
+GET {{host1}}/admin/revenue

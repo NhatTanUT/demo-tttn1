@@ -489,9 +489,7 @@ class UserController {
         discount = foundDiscount.code
         total = Math.round(total * Number(foundDiscount.amount)) / 100;
       }
-
-      
-      const newOrder = new Order({
+      let field = {
         OrderItems: orderItems,
         status,
         idUser,
@@ -508,6 +506,13 @@ class UserController {
         country,
         postalCode,
         phone,
+      }
+      if (idUser === 'guest') {
+        delete field.idUser
+      }
+
+      const newOrder = new Order({
+        
       });
 
       newOrder.save();
@@ -523,7 +528,10 @@ class UserController {
         }
       }
 
-      let foundUser = await Users.updateOne({_id: newOrder.idUser}, {$set: {cart: []}})
+      if (newOrder.idUser) {
+        let foundUser = await Users.updateOne({_id: newOrder.idUser}, {$set: {cart: []}})
+        
+      }
       // if (foundUser.modifiedCount !== 1) {}  //chua nhat thiet phai loi
 
       res.locals.newOrder = newOrder;
