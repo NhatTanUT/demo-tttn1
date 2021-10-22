@@ -28,7 +28,7 @@ app.use("/uploads", express.static("uploads"));
 app.use(express.static(pathPublic));
 
 app.all('/*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", ["https://vuetify-shop.netlify.app", "http://localhost:8080"]);
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });
@@ -111,6 +111,8 @@ app.use((req, res, next) => {
 
 // Handle error middleware
 app.use((err, req, res, next) => {
+  console.log(err);
+  console.log(req.body);
   logEvents(`${req.url} -- ${req.method} \n ${err.message} \n\n ${JSON.stringify(req.body, null, 2)}`)
   res.status(err.status || 500)
   res.json({msg: err.message})

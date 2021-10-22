@@ -176,7 +176,7 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/admin/register
+POST {{host1}}/admin/register
 Content-Type: application/json
 
 {
