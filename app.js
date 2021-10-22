@@ -22,17 +22,20 @@ app.use(helmet())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: ['https://vuetify-shop.netlify.app', 'http://localhost:8080']
+}));
 app.use(morgan("dev"));
 app.use("/uploads", express.static("uploads"));
 app.use(express.static(pathPublic));
 
-app.all('/*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://vuetify-shop.netlify.app");
-  // res.header("Access-Control-Allow-Origin", "http://localhost:8080");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});
+// app.all('/*', function(req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "https://vuetify-shop.netlify.app");
+//   // res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+//   res.header("Access-Control-Allow-Headers", "X-Requested-With");
+//   next();
+// });
 
 // =============== MONGOOSE ==================
 const connectDatabase = require('./config/db.config');
