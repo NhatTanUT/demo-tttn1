@@ -29,7 +29,7 @@ app.use(express.static(pathPublic));
 
 app.all('/*', function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "https://vuetify-shop.netlify.app");
-  res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+  // res.header("Access-Control-Allow-Origin", "http://localhost:8080");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });
