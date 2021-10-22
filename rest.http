@@ -2,7 +2,7 @@
 @host1 = https://web-demo.online
 
 ###
-POST {{host}}/admin/notify
+POST {{host1}}/admin/notify
 content-type: application/json
 
 {
@@ -13,7 +13,7 @@ content-type: application/json
 
 ###
 
-POST {{host}}/admin/notify_banner
+POST {{host1}}/admin/notify_banner
 content-type: application/json
 
 {
@@ -227,8 +227,8 @@ POST {{host}}/login
 Content-Type: application/json
 
 {
-    "email": "tvnt221@gmail.com",
-    "password": "700621"
+    "email": "nhattan24121999@gmail.com",
+    "password": "12345678"
 }
 
 ###
@@ -244,4 +244,11 @@ GET {{host}}/admin/user
 GET {{host1}}/admin/revenue
 
 ###
-GET {{host}}/admin/test
+GET {{host}}/changePassword
+Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjU5MGNlMmNmMGM5M2MzZjkxNTNjZSIsImlhdCI6MTYzNDg5MzIxNywiZXhwIjoxNjM0OTc5NjE3fQ.an5iPIRqpjh7JUo_FobUt_bFejk8z7FZailE9ZK4P_E"
+Content-Type: application/json
+
+{
+  "password": "123456",
+  "oldPassword": "12345678"  
+}

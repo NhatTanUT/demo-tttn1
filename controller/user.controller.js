@@ -5,9 +5,12 @@ const Category = require("../models/category.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 
-const {createAccessToken, createRefreshToken} = require('../utils/createToken')
+const {
+  createAccessToken,
+  createRefreshToken,
+} = require("../utils/createToken");
 
-const createError = require('http-errors')
+const createError = require("http-errors");
 const path = require("path");
 const mailer = require("../utils/mailer");
 const bcrypt = require("bcrypt");
@@ -32,7 +35,7 @@ class UserController {
 
       const foundEmail = await Users.findOne({ email: email });
       if (foundEmail)
-        return next(createError(400, "This email already registered. " ));
+        return next(createError(400, "This email already registered. "));
 
       if (password.length < 6)
         return res
@@ -82,7 +85,7 @@ class UserController {
         },
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async login(req, res, next) {
@@ -91,12 +94,10 @@ class UserController {
 
       const user = await Users.findOne({ email: email });
 
-      if (!user)
-        return next(createError(400, "This email does not exist." ));
+      if (!user) return next(createError(400, "This email does not exist."));
 
       const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch)
-        return next(createError(400, "Password is incorrect." ));
+      if (!isMatch) return next(createError(400, "Password is incorrect."));
 
       const access_token = createAccessToken({ id: user._id });
       const refresh_token = createRefreshToken({ id: user._id });
@@ -117,7 +118,7 @@ class UserController {
         },
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async logout(req, res, next) {
@@ -125,25 +126,23 @@ class UserController {
       res.clearCookie("refresh_token", { path: "/refresh_token" });
       return res.json({ msg: "Logged out!" });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getAccessToken(req, res, next) {
     try {
       const { refreshToken } = req.body;
-      if (!refreshToken)
-        return next(createError(400, "Please login now." ));
+      if (!refreshToken) return next(createError(400, "Please login now."));
 
       jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
         async (err, result) => {
-          if (err) return next(createError(400, "Please login now." ));
+          if (err) return next(createError(400, "Please login now."));
 
           const user = await Users.findById(result.id).select("-password");
 
-          if (!user)
-            return next(createError(400, "This does not exist." ));
+          if (!user) return next(createError(400, "This does not exist."));
 
           const access_token = createAccessToken({ id: result.id });
 
@@ -154,7 +153,7 @@ class UserController {
         }
       );
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getProducts(req, res, next) {
@@ -170,16 +169,22 @@ class UserController {
     const data = await Category.find({}).populate("products");
     return res.json({ count: data.length, entries: data });
   }
-  
+
   async changePassword(req, res, next) {
     try {
       const userId = req.user._id;
       const password = req.body.password;
+      const oldPassword = req.body.oldPassword;
 
       if (password.length < 6)
-        return res
-          .status(400)
-          .json({ msg: "Password must be at least 6 characters." });
+        return next(createError(400, "Password must be at least 6 characters." ));
+
+      const user = await Users.findOne({ _id: userId });
+
+      if (!user) return next(createError(400, "User does not exist."));
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) return next(createError(400, "Password is incorrect."));
 
       const passwordHash = await bcrypt.hash(password, 12);
 
@@ -196,7 +201,7 @@ class UserController {
 
       return res.json({ msg: "Change password success" });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendMail(req, res, next) {
@@ -204,7 +209,7 @@ class UserController {
       const { to, subject, body } = req.body;
       await mailer.sendMail(to, subject, body);
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendMailOrder(req, res, next) {
@@ -333,17 +338,17 @@ class UserController {
       // ##############################################
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getOrders(req, res, next) {
     try {
       const id = req.user._id;
       const orders = await Order.find({ idUser: id }).lean();
-      
+
       res.json(orders);
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendResetPassword(req, res, next) {
@@ -352,7 +357,7 @@ class UserController {
 
       const foundUser = await Users.findOne({ email: email }).lean();
       if (!foundUser) {
-        return next(createError(500, "Not found email!" ));
+        return next(createError(500, "Not found email!"));
       }
 
       const secret = process.env.RESET_TOKEN_SECRET + foundUser.password;
@@ -473,20 +478,20 @@ class UserController {
         phone,
       } = req.body;
 
-      let status = "Unpaid"
+      let status = "Unpaid";
 
       let total = 0;
       for (let el of orderItems) {
-        total += Number(el.price)
+        total += Number(el.price);
       }
 
-      let foundDiscount = res.locals.foundDiscount
-      
+      let foundDiscount = res.locals.foundDiscount;
+
       // total = Number.parseInt(total)
-      let discount = ""
+      let discount = "";
 
       if (foundDiscount) {
-        discount = foundDiscount.code
+        discount = foundDiscount.code;
         total = Math.round(total * Number(foundDiscount.amount)) / 100;
       }
       let field = {
@@ -506,31 +511,36 @@ class UserController {
         country,
         postalCode,
         phone,
-      }
-      if (idUser === 'guest') {
-        delete field.idUser
+      };
+      if (idUser === "guest") {
+        delete field.idUser;
       }
 
       const newOrder = new Order({
-        ...field
+        ...field,
       });
 
       newOrder.save();
 
       if (!newOrder) {
-        return next(createError(500, 'Cant create order' ));
+        return next(createError(500, "Cant create order"));
       }
 
       for (let el of newOrder.OrderItems) {
-        let foundProduct = await Product.updateOne({_id: el.idProduct}, {$inc: {count: 1}})
+        let foundProduct = await Product.updateOne(
+          { _id: el.idProduct },
+          { $inc: { count: 1 } }
+        );
         if (foundProduct.modifiedCount !== 1) {
-          return next(createError(500, 'Cant increase count product'))
+          return next(createError(500, "Cant increase count product"));
         }
       }
 
       if (newOrder.idUser) {
-        let foundUser = await Users.updateOne({_id: newOrder.idUser}, {$set: {cart: []}})
-        
+        let foundUser = await Users.updateOne(
+          { _id: newOrder.idUser },
+          { $set: { cart: [] } }
+        );
       }
       // if (foundUser.modifiedCount !== 1) {}  //chua nhat thiet phai loi
 
@@ -539,7 +549,7 @@ class UserController {
       return next();
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getOrders(req, res, next) {
@@ -549,7 +559,7 @@ class UserController {
 
       res.json(orders);
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendResetPassword(req, res, next) {
@@ -558,7 +568,7 @@ class UserController {
 
       const foundUser = await Users.findOne({ email: email }).lean();
       if (!foundUser) {
-        return next(createError(500, "Not found email!" ));
+        return next(createError(500, "Not found email!"));
       }
 
       const secret = process.env.RESET_TOKEN_SECRET + foundUser.password;
@@ -659,7 +669,7 @@ class UserController {
       await mailer.sendMail(to, subject, body);
       return res.json({ msg: "Link reset was sent to email!" });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async resetPassword(req, res, next) {
@@ -672,13 +682,13 @@ class UserController {
         .json({ msg: "Password must be at least 6 characters." });
 
     const foundUser = await Users.findOne({ _id: id });
-    if (!foundUser) return next(createError(400, "Not found email. " ));
+    if (!foundUser) return next(createError(400, "Not found email. "));
 
     const user = jwt.verify(
       tokenResetPassword,
       process.env.RESET_TOKEN_SECRET + foundUser.password
     );
-    if (!user) return next(createError(401, "Invalid Authentication." ));
+    if (!user) return next(createError(401, "Invalid Authentication."));
 
     const passwordHash = await bcrypt.hash(password, 12);
 
@@ -702,7 +712,7 @@ class UserController {
 
       return res.json({ cart: user.cart });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async addCart(req, res, next) {
@@ -711,8 +721,7 @@ class UserController {
 
       const foundUser = await Users.findOne({ _id: req.user._id });
 
-      if (!foundUser)
-        return next(createError(400, "Invalid Authentication." ));
+      if (!foundUser) return next(createError(400, "Invalid Authentication."));
 
       const cart = foundUser.cart;
 
@@ -746,7 +755,7 @@ class UserController {
         quantity,
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async removeCart(req, res, next) {
@@ -768,23 +777,15 @@ class UserController {
 
       return res.json({ msg: "Remove item from cart success" });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async checkout(req, res, next) {
     try {
-      let {
-        email,
-        firstName,
-        lastName,
-        number,
-        exp_month,
-        exp_year,
-        cvc
-      } = req.body;
+      let { email, firstName, lastName, number, exp_month, exp_year, cvc } =
+        req.body;
       // const id = req.user._id;
 
-      
       const customer = await stripe.customers.create({
         email: email,
         name: firstName + " " + lastName,
@@ -812,25 +813,23 @@ class UserController {
         currency: "usd",
         source: token.id,
       });
-      
-      if (charge.status === 'succeeded') {
-        const idOrder = res.locals.newOrder._id
-        const foundOrder = await Order.updateOne({_id: mongoose.Types.ObjectId(idOrder)}, {$set: {status: 'Paid'}})
-        
-        if (foundOrder.matchedCount === 1) {
-          res.json({msg: 'Checkout #'+idOrder + " success"}) 
-        }
-        else (
-          res.status(500).json({msg: 'Checkout #'+idOrder + " fail"})
-        )
 
+      if (charge.status === "succeeded") {
+        const idOrder = res.locals.newOrder._id;
+        const foundOrder = await Order.updateOne(
+          { _id: mongoose.Types.ObjectId(idOrder) },
+          { $set: { status: "Paid" } }
+        );
+
+        if (foundOrder.matchedCount === 1) {
+          res.json({ msg: "Checkout #" + idOrder + " success" });
+        } else res.status(500).json({ msg: "Checkout #" + idOrder + " fail" });
       }
 
-
-      return next()
+      return next();
     } catch (error) {
       console.log(error.message);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async changeInfo(req, res, next) {
@@ -863,7 +862,7 @@ class UserController {
       });
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async uploadFile(req, res, next) {
@@ -873,10 +872,10 @@ class UserController {
           .status(200)
           .send({ path: req.file.path, origin: req.file.originalname });
       } else {
-        return next(createError(500, "Error" ));
+        return next(createError(500, "Error"));
       }
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getInfo(req, res, next) {
@@ -890,7 +889,7 @@ class UserController {
 
       return res.json({ ...foundUser._doc });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async addWishlist(req, res, next) {
@@ -910,7 +909,7 @@ class UserController {
 
       return res.json({ msg: "Add wishlist success", id, idProduct });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getWishlist(req, res, next) {
@@ -922,7 +921,7 @@ class UserController {
 
       return res.json({ ...foundUser });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async removeWishlist(req, res, next) {
@@ -940,7 +939,7 @@ class UserController {
         idProduct,
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getNotification(req, res, next) {
@@ -953,7 +952,7 @@ class UserController {
 
       return res.json({ ...foundUser._doc });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async downloadSource(req, res, next) {
@@ -980,19 +979,16 @@ class UserController {
         }
       }
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async check_Discount(req, res, next) {
     try {
-  
       if (res.locals.foundDiscount) {
-        return res.json(res.locals.foundDiscount)
-      }
-      else 
-        return next(createError(500, "Cant find discount1" ));
+        return res.json(res.locals.foundDiscount);
+      } else return next(createError(500, "Cant find discount1"));
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
 }
