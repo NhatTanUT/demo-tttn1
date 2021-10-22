@@ -46,7 +46,7 @@ connectDatabase();
 let onlineClients = []; // list client online
 const io = socketio(server, {
   cors: {
-    origin: '*',
+    origin: ['https://vuetify-shop.netlify.app', 'http://localhost:8080'],
     
   }
 });
