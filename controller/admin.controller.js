@@ -14,7 +14,7 @@ const {
   createRefreshToken,
 } = require("../utils/createToken");
 const mongoose = require("mongoose");
-const createError = require('http-errors')
+const createError = require("http-errors");
 const { sendMail } = require("../utils/mailer");
 const { google } = require("googleapis");
 
@@ -53,7 +53,7 @@ class AdminController {
       delete update.rate;
 
       if (!req.files) {
-        return next(createError(500, "Must have img product" ));
+        return next(createError(500, "Must have img product"));
       }
 
       update.img =
@@ -75,7 +75,7 @@ class AdminController {
       return res.json({ msg: "Add product success", product: newProduct });
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
 
@@ -91,7 +91,7 @@ class AdminController {
       return res.json({ msg: "Add category success", newCategory });
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async updateProduct(req, res, next) {
@@ -120,10 +120,10 @@ class AdminController {
       );
       if (foundProduct.matchedCount === 1)
         return res.json({ msg: "Update product success", update });
-      else return next(createError(500, "Cant find productid" ));
+      else return next(createError(500, "Cant find productid"));
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async updateCategory(req, res, next) {
@@ -137,9 +137,9 @@ class AdminController {
 
       if (foundCategory.matchedCount === 1)
         return res.json({ msg: "Update category success", idCategory, update });
-      else return next(createError(500, "Cant find category" ));
+      else return next(createError(500, "Cant find category"));
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getAllUser(req, res, next) {
@@ -148,7 +148,7 @@ class AdminController {
 
       return res.json({ allUser });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getAllOrder(req, res, next) {
@@ -157,7 +157,7 @@ class AdminController {
 
       return res.json({ allOrder });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendMailWishList(req, res, next) {
@@ -359,7 +359,7 @@ class AdminController {
         foundProduct,
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendPromotion(req, res, next) {
@@ -369,7 +369,7 @@ class AdminController {
       io.emit("Server-sent-notification", { content: content });
       return res.json({ msg: "Send promotion success", content });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getAllClientOnline(req, res, next) {
@@ -377,7 +377,7 @@ class AdminController {
       const list = getClientOnline();
       return res.json({ client: list });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendNotification(req, res, next) {
@@ -413,7 +413,7 @@ class AdminController {
       });
       return res.json({ msg: "Send notification", listUser, content });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendNotificationBanner(req, res, next) {
@@ -425,7 +425,7 @@ class AdminController {
       return res.json({ msg: "Send notification", content });
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   // async removeNotify(req, res, next) {
@@ -448,7 +448,7 @@ class AdminController {
         source,
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async removeProduct(req, res, next) {
@@ -460,10 +460,10 @@ class AdminController {
       if (foundProduct.deletedCount === 1)
         return res.json({ msg: "Delete productId #" + idProduct + " success" });
       else {
-        return next(createError(500, "Can't find productid" ));
+        return next(createError(500, "Can't find productid"));
       }
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async removeCategory(req, res, next) {
@@ -475,10 +475,10 @@ class AdminController {
       if (foundCategory.deletedCount === 1)
         return res.json({ msg: "Delete category #" + idCategory + " success" });
       else {
-        return next(createError(500, "Can't find categoryid" ));
+        return next(createError(500, "Can't find categoryid"));
       }
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async updateUser(req, res, next) {
@@ -500,9 +500,9 @@ class AdminController {
 
       if (foundUser.matchedCount === 1)
         return res.json({ msg: "Update userid #" + idUser + " success" });
-      else return next(createError(500, "Cant find userid" ));
+      else return next(createError(500, "Cant find userid"));
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async deleteUser(req, res, next) {
@@ -513,9 +513,9 @@ class AdminController {
       });
       if (foundUser.deletedCount === 1)
         return res.json({ msg: "Delete userid #" + idUser + " success" });
-      else return next(createError(500, "Cant find userid" ));
+      else return next(createError(500, "Cant find userid"));
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async removeOrder(req, res, next) {
@@ -526,9 +526,9 @@ class AdminController {
       });
       if (foundOrder.deletedCount === 1)
         return res.json({ msg: "Delete orderid #" + idOrder + " success" });
-      else return next(createError(500, "Cant find orderid" ));
+      else return next(createError(500, "Cant find orderid"));
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async addDiscount(req, res, next) {
@@ -545,24 +545,24 @@ class AdminController {
       // console.log(startDate);
 
       if (startDate >= expireDate) {
-        return next(createError(500, "Expire date must > start date" ));
+        return next(createError(500, "Expire date must > start date"));
       }
 
       if (amount < 0) {
-        return next(createError(500, "Amount must >= 0" ));
+        return next(createError(500, "Amount must >= 0"));
       }
 
       if (amount > 100) {
-        return next(createError(500, "Amount must < 100" ));
+        return next(createError(500, "Amount must < 100"));
       }
 
       const foundDiscount = await Discount.findOne({ code }).lean();
 
       if (foundDiscount)
-        return next(createError(500, "Discount code has already exist" ));
+        return next(createError(500, "Discount code has already exist"));
 
-      code = code.toLowerCase()
-      
+      code = code.toLowerCase();
+
       let newDiscount = new Discount({
         code,
         expireDate,
@@ -573,7 +573,7 @@ class AdminController {
       await newDiscount.save();
       return res.json({ msg: "New discount: " + code });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async removeDiscount(req, res, next) {
@@ -584,9 +584,9 @@ class AdminController {
       });
       if (foundDiscount.deletedCount === 1)
         return res.json({ msg: "Delete discount " + code + " success" });
-      else return next(createError(500, "Cant find discount" ));
+      else return next(createError(500, "Cant find discount"));
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async addUser(req, res, next) {
@@ -643,7 +643,7 @@ class AdminController {
         },
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async getDiscount(req, res, next) {
@@ -652,7 +652,7 @@ class AdminController {
 
       return res.json({ foundDiscount });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async updateDiscount(req, res, next) {
@@ -661,16 +661,16 @@ class AdminController {
 
       if (startDate && expireDate) {
         if (new Date(startDate) >= new Date(expireDate)) {
-          return next(createError(500, "startDate must < expireDate" ));
+          return next(createError(500, "startDate must < expireDate"));
         }
       }
 
       if (!code || code === "") {
-        return next(createError(500, "Must have code" ));
+        return next(createError(500, "Must have code"));
       }
 
       if (amount > 100) {
-        return next(createError(500, "Amount must < 100" ));
+        return next(createError(500, "Amount must < 100"));
       }
 
       const foundDiscount = await Discount.updateOne(
@@ -687,10 +687,10 @@ class AdminController {
           amount,
         });
       } else {
-        return next(createError(500, "Cant find discount" ));
+        return next(createError(500, "Cant find discount"));
       }
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async register(req, res, next) {
@@ -738,7 +738,7 @@ class AdminController {
         },
       });
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async sendMailRegister(req, res, next) {
@@ -757,12 +757,11 @@ class AdminController {
 
       return await sendMail(to, subject, body);
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
   async statisticRevenue(req, res, next) {
     try {
-    
       // default get revenue today
       // if (!req.query.type || req.query.type === 'day') {
       //   // const getDay = new Date().getDay()
@@ -786,14 +785,14 @@ class AdminController {
 
       // }
       // else if (req.query.type === 'month') {
-        const getDate = new Date().getDate()
-        let dateNow = new Date()
-        dateNow.setHours(0, 0, 0, 0)
+      const getDate = new Date().getDate();
+      let dateNow = new Date();
+      dateNow.setHours(0, 0, 0, 0);
 
-        var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDate + 1));
+      var firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDate + 1));
 
-        var lastDay = new Date(dateNow.setMonth(dateNow.getMonth() + 1));
-        lastDay.setDate(1)
+      var lastDay = new Date(dateNow.setMonth(dateNow.getMonth() + 1));
+      lastDay.setDate(1);
       // }
       // else if (req.query.type === 'year') {
       //   let dateNow = new Date()
@@ -812,28 +811,27 @@ class AdminController {
 
       // let foundOrder = await Order.find({"Datetime": {$lt: lastDay, $gte: firstDay}})
 
-      
       const foundOrder = await Order.aggregate([
         { $match: { Datetime: { $lt: lastDay, $gte: firstDay } } },
         {
           $group: {
-            "_id": { $dateToString: { format: "%Y-%m-%d", date: "$Datetime" } },
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$Datetime" } },
             total: {
-              $sum: "$total"
-            }
-          }
+              $sum: "$total",
+            },
+          },
         },
-        { $sort: { _id: 1 } }
+        { $sort: { _id: 1 } },
       ]);
-      
-      let sum = 0
+
+      let sum = 0;
 
       for (let el of foundOrder) {
-        sum += el.total
+        sum += el.total;
       }
 
-      sum = Math.round(sum * 100) / 100
-      
+      sum = Math.round(sum * 100) / 100;
+
       return res.json({
         sum: sum,
         count: foundOrder.length,
@@ -842,17 +840,17 @@ class AdminController {
       });
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
 
-  async analytics (req, res, next) {
+  async analytics(req, res, next) {
     // const service_account = require("../auth.json");
-  
+
     const reporting = google.analyticsreporting("v4");
-  
+
     let scopes = ["https://www.googleapis.com/auth/analytics"];
-  
+
     try {
       let jwt = new google.auth.JWT(
         process.env.CLIENT_EMAIL,
@@ -860,46 +858,56 @@ class AdminController {
         process.env.PRIVATE_KEY,
         scopes
       );
-    
+
       const view_id = "254333765";
-    
+
       const defaults = {
         auth: jwt,
         ids: "ga:" + view_id,
       };
-    
+
       let data = [];
-    
+
       let date = await google.analytics("v3").data.ga.get({
         ...defaults,
         "start-date": "today",
         "end-date": "today",
         metrics: "ga:pageviews",
       });
-    
-      data.push({ type: "date", count: date.data.rows[0][0] });
-      
+
+      if (!date.data.rows) {
+        data.push({ type: "date", count: 0 });
+      } else {
+        data.push({ type: "date", count: date.data.rows[0][0] });
+      }
+
       let week = await google.analytics("v3").data.ga.get({
         ...defaults,
         "start-date": "6daysAgo",
         "end-date": "today",
         metrics: "ga:pageviews",
       });
-    
-      data.push({ type: "week", count: week.data.rows[0][0] });
-    
+
+      if (!week.data.rows) {
+        data.push({ type: "week", count: 0 });
+      } else {
+        data.push({ type: "week", count: week.data.rows[0][0] });
+      }
       let month = await google.analytics("v3").data.ga.get({
         ...defaults,
         "start-date": "30daysAgo",
         "end-date": "today",
         metrics: "ga:pageviews",
       });
-    
-      data.push({ type: "month", count: month.data.rows[0][0] });
-    
+
+      if (!month.data.rows) {
+        data.push({ type: "month", count: 0 });
+      } else {
+        data.push({ type: "month", count: month.data.rows[0][0] });
+      }
       return res.json(data);
     } catch (error) {
-      return next(createError(500, error.message ));
+      return next(createError(500, error.message));
     }
   }
 }
