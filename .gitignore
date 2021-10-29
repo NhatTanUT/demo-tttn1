@@ -122,3 +122,4 @@ web-chat.ppk
 *.http
 
 database.js
+auth.json

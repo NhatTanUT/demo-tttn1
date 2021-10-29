@@ -16,6 +16,7 @@ const {
 const mongoose = require("mongoose");
 const createError = require('http-errors')
 const { sendMail } = require("../utils/mailer");
+const { google } = require("googleapis");
 
 class AdminController {
   // async addPreview(req, res, next) {
@@ -841,6 +842,63 @@ class AdminController {
       });
     } catch (error) {
       console.log(error);
+      return next(createError(500, error.message ));
+    }
+  }
+
+  async analytics (req, res, next) {
+    // const service_account = require("../auth.json");
+  
+    const reporting = google.analyticsreporting("v4");
+  
+    let scopes = ["https://www.googleapis.com/auth/analytics"];
+  
+    try {
+      let jwt = new google.auth.JWT(
+        process.env.CLIENT_EMAIL,
+        null,
+        process.env.PRIVATE_KEY,
+        scopes
+      );
+    
+      const view_id = "254333765";
+    
+      const defaults = {
+        auth: jwt,
+        ids: "ga:" + view_id,
+      };
+    
+      let data = [];
+    
+      let date = await google.analytics("v3").data.ga.get({
+        ...defaults,
+        "start-date": "today",
+        "end-date": "today",
+        metrics: "ga:pageviews",
+      });
+    
+      data.push({ type: "date", count: date.data.rows[0][0] });
+      
+      let week = await google.analytics("v3").data.ga.get({
+        ...defaults,
+        "start-date": "6daysAgo",
+        "end-date": "today",
+        metrics: "ga:pageviews",
+      });
+    
+      data.push({ type: "week", count: week.data.rows[0][0] });
+    
+      let month = await google.analytics("v3").data.ga.get({
+        ...defaults,
+        "start-date": "30daysAgo",
+        "end-date": "today",
+        metrics: "ga:pageviews",
+      });
+    
+      data.push({ type: "month", count: month.data.rows[0][0] });
+    
+      return res.json(data);
+    } catch (error) {
       return next(createError(500, error.message ));
     }
   }

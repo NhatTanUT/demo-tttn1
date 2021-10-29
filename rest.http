@@ -241,14 +241,25 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjk0NGVlZThkZThh
 GET {{host}}/admin/user
 
 ###
-GET {{host1}}/admin/revenue
+GET {{host}}/admin/revenue
 
 ###
-GET {{host}}/changePassword
-Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjU5MGNlMmNmMGM5M2MzZjkxNTNjZSIsImlhdCI6MTYzNDg5MzIxNywiZXhwIjoxNjM0OTc5NjE3fQ.an5iPIRqpjh7JUo_FobUt_bFejk8z7FZailE9ZK4P_E"
+POST {{host}}/changePassword
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjU5MGNlMmNmMGM5M2MzZjkxNTNjZSIsImlhdCI6MTYzNDg5MzIxNywiZXhwIjoxNjM0OTc5NjE3fQ.an5iPIRqpjh7JUo_FobUt_bFejk8z7FZailE9ZK4P_E
 Content-Type: application/json
 
 {
   "password": "123456",
   "oldPassword": "12345678"  
 }
+
+###
+POST {{host}}/admin/test2
+Content-Type: application/json
+
+{
+    "email": "uydsighdsi@gmail.com"
+}
+
+###
+GET {{host}}/admin/analytics
