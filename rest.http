@@ -17,7 +17,7 @@ POST {{host1}}/admin/notify_banner
 content-type: application/json
 
 {
-    "content": "Hello",
+    "content": "Giam gia 20% tat ca san pham",
     "percent": 20
 
 }

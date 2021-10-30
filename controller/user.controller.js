@@ -490,7 +490,7 @@ class UserController {
         {
           _id: { $in: listProduct },
         },
-        "price title"
+        "price title percent"
       );
 
       // console.log(foundPro);
@@ -499,6 +499,7 @@ class UserController {
         for (let e of orderItems) {
           if (el._id == e.idProduct) {
             e.name = el.title
+            e.percent = el.percent
             if (el.price !== e.price) return next(createError(500, 'Incorrect price'))
             newOrderItems.push(e)
           }
@@ -509,7 +510,7 @@ class UserController {
 
       let total = 0;
       for (let el of orderItems) {
-        total += Number(el.price) * Number(el.quantity) * ((100 - Number(el.percent) / 100) )
+        total += Number(el.price) * Number(el.quantity) * ((100 - Number(el.percent)) / 100)
       }
 
       let foundDiscount = res.locals.foundDiscount;
@@ -857,7 +858,7 @@ class UserController {
 
       return next();
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
       return next(createError(500, error.message));
     }
   }
