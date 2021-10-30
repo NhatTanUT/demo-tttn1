@@ -439,7 +439,7 @@ class AdminController {
         }
 
         io.emit("Server-sent-notification", {
-          content: percent,
+          content: content,
         });
       }
     } catch (error) {

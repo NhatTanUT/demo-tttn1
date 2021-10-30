@@ -509,12 +509,13 @@ class UserController {
 
       let total = 0;
       for (let el of orderItems) {
-        total += Number(el.price) * Number(el.quantity)
+        total += Number(el.price) * Number(el.quantity) * ((100 - Number(el.percent) / 100) )
       }
 
       let foundDiscount = res.locals.foundDiscount;
 
       let discount = "";
+
 
       // Use discount
       if (foundDiscount) {
