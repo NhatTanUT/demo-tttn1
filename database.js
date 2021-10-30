@@ -74,9 +74,9 @@ async function main(){
 
         // lay order theo ngay
 
-        const found = await db.collection('products').updateOne({"_id": ObjectId('611e71cf37725149c830aa04')}, {$set: {quantity: 56}})
+        const found = await db.collection('products').updateMany({}, {$set: {percent: 0}}, {multi: true})
 
-        if (found.modifiedCount !== 1) {
+        if (found.modifiedCount === 0) {
             console.log("Error");
         }
         else {

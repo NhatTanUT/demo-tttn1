@@ -13,7 +13,7 @@ content-type: application/json
 
 ###
 
-POST {{host1}}/admin/notify_banner
+POST {{host}}/admin/notify_banner
 content-type: application/json
 
 {
@@ -189,20 +189,20 @@ Content-Type: application/json
 }
 
 ###
-POST {{host1}}/addOrder
+POST {{host}}/addOrder
 Content-Type: application/json
 
 {
     "orderItems": [{
         "idProduct": "61124f8570dfe42c98e9925f",
         "name": "ssvsdvdsvd",
-        "quantity": 1,
-        "price": 10
+        "quantity": 2,
+        "price": 59
     }, {
         "idProduct": "611ca8c435f54f9329280f50",
         "name": "sdifkjsdhkds",
         "quantity": 2,
-        "price": 14
+        "price": 0
     }],
     "idUser": "615331ffc7dc43e2e5c84f45",
     "discount": "test1",

@@ -177,7 +177,9 @@ class UserController {
       const oldPassword = req.body.oldPassword;
 
       if (password.length < 6)
-        return next(createError(400, "Password must be at least 6 characters." ));
+        return next(
+          createError(400, "Password must be at least 6 characters.")
+        );
 
       const user = await Users.findOne({ _id: userId });
 
@@ -462,10 +464,9 @@ class UserController {
   }
   async addOrder(req, res, next) {
     try {
-      const {
+      let {
         orderItems,
         idUser,
-        Datetime,
         email,
         firstName,
         lastName,
@@ -480,20 +481,47 @@ class UserController {
 
       let status = "Unpaid";
 
+      // Check price
+      let listProduct = orderItems.map((el) => {
+        return el.idProduct;
+      });
+
+      let foundPro = await Product.find(
+        {
+          _id: { $in: listProduct },
+        },
+        "price title"
+      );
+
+      // console.log(foundPro);
+      let newOrderItems = [];
+      for (let el of foundPro) {
+        for (let e of orderItems) {
+          if (el._id == e.idProduct) {
+            e.name = el.title
+            if (el.price !== e.price) return next(createError(500, 'Incorrect price'))
+            newOrderItems.push(e)
+          }
+        }
+      }
+
+      orderItems = newOrderItems
+
       let total = 0;
       for (let el of orderItems) {
-        total += Number(el.price);
+        total += Number(el.price) * Number(el.quantity)
       }
 
       let foundDiscount = res.locals.foundDiscount;
 
-      // total = Number.parseInt(total)
       let discount = "";
 
+      // Use discount
       if (foundDiscount) {
         discount = foundDiscount.code;
         total = Math.round(total * Number(foundDiscount.amount)) / 100;
       }
+
       let field = {
         OrderItems: orderItems,
         status,

@@ -418,11 +418,30 @@ class AdminController {
   }
   async sendNotificationBanner(req, res, next) {
     try {
-      const { content } = req.body;
-      io.emit("Server-sent-notification", {
-        content: content,
-      });
-      return res.json({ msg: "Send notification", content });
+      let { content, percent } = req.body;
+      
+      percent = Number(percent)
+      if (!percent) {
+        io.emit("Server-sent-notification", {
+          content: content,
+        });
+
+        return res.json({ msg: "Send notification", content });
+      } else {
+        let found = await Product.updateMany(
+          {},
+          { $set: { percent: percent } },
+          { multi: true }
+        );
+        
+        if (found.modifiedCount === 0) {
+          return next(createError(500, "Error update price"));
+        }
+
+        io.emit("Server-sent-notification", {
+          content: percent,
+        });
+      }
     } catch (error) {
       console.log(error);
       return next(createError(500, error.message));
