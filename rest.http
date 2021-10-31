@@ -241,7 +241,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNjk0NGVlZThkZThh
 GET {{host}}/admin/user
 
 ###
-GET {{host}}/admin/revenue
+GET {{host1}}/admin/revenue
 
 ###
 POST {{host}}/changePassword
@@ -262,6 +262,6 @@ Content-Type: application/json
 }
 
 ###
-GET {{host}}/admin/analytics
+GET {{host1}}/admin/analytics
 ###
-GET {{host}}/admin/analytics/v2
+GET {{host1}}/admin/analytics/v2

@@ -97,7 +97,7 @@ io.on('connection', function (socket) {
 module.exports = {io, getClientOnline}
 
 var cron = require('node-cron');
-cron.schedule('23 50 * * *', async () => {
+cron.schedule('50 23 * * *', async () => {
   console.log('Update list client access at 23:50 at Asia/Ho_Chi_Minh timezone');
   let date = new Date(new Date().getTime());
     date.setHours(0, 0, 0, 0);
