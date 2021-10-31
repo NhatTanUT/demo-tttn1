@@ -44,9 +44,10 @@ connectDatabase();
 
 // =============== SOCKET.IO ==================
 let onlineClients = []; // list client online
+const AccessLog = require('./models/accessLog.model')
 const io = socketio(server, {
   cors: {
-    origin: ['https://vuetify-shop.netlify.app', 'http://localhost:8080'],
+    origin: ['https://vuetify-shop.netlify.app', 'http://localhost:8080', 'https://admin-vuetifyshop.netlify.app'],
     
   }
 });
@@ -59,18 +60,13 @@ io.on('connection', function (socket) {
   onlineClients = onlineClients.filter(e => {
     return e.socketId !== socket.id
   })
-  onlineClients.push({socketId: socket.id, userId: ''});
+  onlineClients.push({socketId: socket.id, userId: '', date: new Date()});
   countOnlineClients ++;
   console.log('Count Online Client: ' + countOnlineClients);
 
   socket.on('disconnect', () => {
-    onlineClients = onlineClients.filter(e => {
-      return e.socketId !== socket.id
-    })
-    // onlineClients.forEach(function(so){
-    //   if (so.socketId === socket.id){
-    //     onlineClients.delete(so)
-    //   }
+    // onlineClients = onlineClients.filter(e => {
+    //   return e.socketId !== socket.id
     // })
 
     countOnlineClients --;
@@ -88,7 +84,7 @@ io.on('connection', function (socket) {
     onlineClients = onlineClients.filter(e => {
       return e.socketId !== socket.id
     })
-    onlineClients.push({socketId: socket.id, userId: data})
+    onlineClients.push({socketId: socket.id, userId: data, date: new Date()})
     // onlineClients.forEach(function(so){
     //   if (so.socketId === socket.id){
     //     onlineClients.delete(so)
@@ -99,6 +95,22 @@ io.on('connection', function (socket) {
 })
 
 module.exports = {io, getClientOnline}
+
+var cron = require('node-cron');
+cron.schedule('0 0 * * *', async () => {
+  console.log('Update list client access at 00:00 at Asia/Ho_Chi_Minh timezone');
+  let date = new Date(new Date().getTime());
+    date.setHours(0, 0, 0, 0);
+  let newAccess = new AccessLog({
+    date: date,
+    list: onlineClients
+  })
+  await newAccess.save()
+  onlineClients = []
+}, {
+  scheduled: true,
+  timezone: "Asia/Ho_Chi_Minh"
+});
 
 
 // ================ ROUTE ===================

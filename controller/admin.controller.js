@@ -5,6 +5,7 @@ const Category = require("../models/category.model");
 const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const Discount = require("../models/discount.model");
+const AccessLog = require('../models/accessLog.model')
 const bcrypt = require("bcrypt");
 
 const mailer = require("../utils/mailer");
@@ -843,6 +844,8 @@ class AdminController {
         { $sort: { _id: 1 } },
       ]);
 
+      console.log(foundOrder);
+
       let sum = 0;
 
       for (let el of foundOrder) {
@@ -927,6 +930,44 @@ class AdminController {
       return res.json(data);
     } catch (error) {
       return next(createError(500, error.message));
+    }
+  }
+  async analyticsv2(req, res, next) {
+    try {
+        let foundLogToday = getClientOnline()
+     
+        let getDay = new Date().getDay()
+        let dateNow = new Date()
+        dateNow.setHours(0, 0, 0, 0)
+
+        let firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDay + 1));
+
+        dateNow = new Date()
+        dateNow.setHours(0,0,0,0)
+        let lastDay = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay) + 1));
+
+        let foundLogWeek = await AccessLog.find({"date": {$lt: lastDay, $gte: firstDay}})
+
+        let getDate = new Date().getDate();
+        dateNow = new Date();
+        dateNow.setHours(0, 0, 0, 0);
+  
+        firstDay = new Date(dateNow.setDate(dateNow.getDate() - getDate + 1));
+  
+        lastDay = new Date(dateNow.setMonth(dateNow.getMonth() + 1));
+        lastDay.setDate(1);
+        
+        let foundLogMonth = await AccessLog.find({"date": {$lt: lastDay, $gte: firstDay}})
+        
+  
+        console.log(foundLogToday);
+        console.log(foundLogWeek);
+        console.log(foundLogMonth);
+        
+        return res.json({today: foundLogToday, week: foundLogWeek, month: foundLogMonth})
+    } catch (error) {
+      return next(createError(500, error.message));
+      
     }
   }
 }

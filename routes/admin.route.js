@@ -85,5 +85,7 @@ router.post("/test2", (req, res, next) => {
 
 // Google Analytics
 router.get("/analytics", AdminController.analytics);
+router.get("/analytics/v2", AdminController.analyticsv2);
+
 
 module.exports = router;

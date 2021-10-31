@@ -17,8 +17,7 @@ POST {{host1}}/admin/notify_banner
 content-type: application/json
 
 {
-    "content": "Giam gia 20% tat ca san pham",
-    "percent": 20
+    "content": "Giam gia 50% tat ca san pham"
 
 }
 
@@ -190,7 +189,7 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/addOrder
+POST {{host1}}/addOrder
 Content-Type: application/json
 
 {
@@ -206,7 +205,7 @@ Content-Type: application/json
         "price": 0
     }],
     "idUser": "615331ffc7dc43e2e5c84f45",
-    "discount": "test1",
+    "discount": "",
     "email": "nhattan24121999@gmail.com",
     "firstName": "123456",
     "lastName": "123456",
@@ -264,3 +263,5 @@ Content-Type: application/json
 
 ###
 GET {{host}}/admin/analytics
+###
+GET {{host}}/admin/analytics/v2
