@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(cookieParser());
 // app.use(cors());
 app.use(cors({
-  origin: ['https://vuetify-shop.netlify.app', 'http://localhost:8080']
+  origin: ['https://vuetify-shop.netlify.app', 'http://localhost:8080', 'https://admin-vuetifyshop.netlify.app']
 }));
 app.use(morgan("dev"));
 app.use("/uploads", express.static("uploads"));
