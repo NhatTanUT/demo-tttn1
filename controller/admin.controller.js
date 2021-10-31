@@ -960,11 +960,11 @@ class AdminController {
         let foundLogMonth = await AccessLog.find({"date": {$lt: lastDay, $gte: firstDay}})
         
   
-        console.log(foundLogToday);
-        console.log(foundLogWeek);
-        console.log(foundLogMonth);
+        // console.log(foundLogToday);
+        // console.log(foundLogWeek);
+        // console.log(foundLogMonth);
         
-        return res.json({today: foundLogToday, week: foundLogWeek, month: foundLogMonth})
+        return res.json([{type: "date", count: foundLogToday.length}, {type: "week", count: foundLogWeek.length}, {type: "month", count: foundLogMonth.length}])
     } catch (error) {
       return next(createError(500, error.message));
       
