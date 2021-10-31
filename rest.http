@@ -265,3 +265,6 @@ Content-Type: application/json
 GET {{host1}}/admin/analytics
 ###
 GET {{host1}}/admin/analytics/v2
+
+###
+GET {{host}}/admin/lastBanner

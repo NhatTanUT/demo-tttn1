@@ -74,14 +74,15 @@ async function main(){
 
         // lay order theo ngay
 
-        const found = await db.collection('products').updateMany({}, {$set: {percent: 0}}, {multi: true})
-
-        if (found.modifiedCount === 0) {
-            console.log("Error");
-        }
-        else {
-            console.log(found);
-        }
+        // const found = await db.collection('products').updateMany({}, {$set: {percent: 0}}, {multi: true})
+        // if (found.modifiedCount === 0) {
+        //     console.log("Error");
+        // }
+        // else {
+        //     console.log(found);
+        // }
+        const found = await db.collection('products').find().sort({_id:-1}).limit(1).toArray()
+        console.log(found);
     } catch (e) {
         console.error(e);
     } finally {

@@ -6,6 +6,7 @@ const Order = require("../models/order.model");
 const Item = require("../models/item.model");
 const Discount = require("../models/discount.model");
 const AccessLog = require('../models/accessLog.model')
+const Banner = require('../models/banner.models')
 const bcrypt = require("bcrypt");
 
 const mailer = require("../utils/mailer");
@@ -426,7 +427,7 @@ class AdminController {
         io.emit("Server-sent-notification", {
           content: content,
         });
-
+        new Banner({content}).save()
         return res.json({ msg: "Send notification", content });
       } else {
         let found = await Product.updateMany(
@@ -442,7 +443,12 @@ class AdminController {
         io.emit("Server-sent-notification", {
           content: content,
         });
+        new Banner({content, percent}).save()
+
+        return res.json({ msg: "Send notification", content, percent });
+
       }
+      
     } catch (error) {
       console.log(error);
       return next(createError(500, error.message));
@@ -947,6 +953,8 @@ class AdminController {
         let lastDay = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay) + 1));
 
         let foundLogWeek = await AccessLog.find({"date": {$lt: lastDay, $gte: firstDay}})
+        
+        // add accesslog today
         foundLogWeek = foundLogWeek.concat(foundLogToday)
         
         let getDate = new Date().getDate();
@@ -959,6 +967,7 @@ class AdminController {
         lastDay.setDate(1);
         
         let foundLogMonth = await AccessLog.find({"date": {$lt: lastDay, $gte: firstDay}})
+        // add access log today
         foundLogMonth = foundLogMonth.concat(foundLogToday)
   
         // console.log(foundLogToday);
@@ -966,6 +975,15 @@ class AdminController {
         // console.log(foundLogMonth);
         
         return res.json([{type: "date", count: foundLogToday.length}, {type: "week", count: foundLogWeek.length}, {type: "month", count: foundLogMonth.length}])
+    } catch (error) {
+      return next(createError(500, error.message));
+      
+    }
+  }
+  async lastBanner(req, res, next) {
+    try {
+      const found = await Banner.find().sort({_id:-1}).limit(1)
+      return res.json(found)
     } catch (error) {
       return next(createError(500, error.message));
       
