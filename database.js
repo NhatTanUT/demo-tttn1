@@ -81,8 +81,13 @@ async function main(){
         // else {
         //     console.log(found);
         // }
-        const found = await db.collection('products').find().sort({_id:-1}).limit(1).toArray()
-        console.log(found);
+        
+        // const found = await db.collection('products').find().sort({_id:-1}).limit(1).toArray()
+        // console.log(found);
+
+        // const found = await db.collection('categories').aggregate([{$lookup: {from: 'products', localField: 'products', foreignField: "_id", as: 'products'}}]).toArray()
+        // console.log(found[0].products);
+        await db.collection('products').updateMany({}, {$set: {"quickFact": ["Reliable & regular updates. This theme is maintained by the author of Vuetify, John Leider.", "Professionally developed. All components and features are developed using the most up-to-date coding practices.", "Blazing fast & optimized. Themes are designed for maximum performance and are semantically structured to maximize SEO.", "Built on Vuetify. Being developed with Vuetify means you have access to all of the frameworks available features."]}})
     } catch (e) {
         console.error(e);
     } finally {

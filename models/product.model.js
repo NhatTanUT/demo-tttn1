@@ -43,7 +43,13 @@ const productSchema = new mongoose.Schema({
     "percent": {
         type: Number,
         default: 0
-    }
+    },
+    "livePreview": {
+        type: String
+    },
+    "quickFact": [{
+        type: Array
+    }]
 })
 
 module.exports = new mongoose.model('Product', productSchema)

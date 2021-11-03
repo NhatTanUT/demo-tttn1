@@ -951,10 +951,10 @@ class AdminController {
         dateNow = new Date()
         dateNow.setHours(0,0,0,0)
         let lastDay = new Date(dateNow.setDate(dateNow.getDate() + (7 - getDay) + 1));
-
         let foundLogWeek = await AccessLog.find({"date": {$lt: lastDay, $gte: firstDay}})
-        
+        // console.log(await AccessLog.find());
         // add accesslog today
+        foundLogWeek = foundLogWeek.map((el) => el.list)
         foundLogWeek = foundLogWeek.concat(foundLogToday)
         
         let getDate = new Date().getDate();
@@ -968,6 +968,7 @@ class AdminController {
         
         let foundLogMonth = await AccessLog.find({"date": {$lt: lastDay, $gte: firstDay}})
         // add access log today
+        foundLogMonth = foundLogMonth.map((el) => el.list)
         foundLogMonth = foundLogMonth.concat(foundLogToday)
   
         // console.log(foundLogToday);
