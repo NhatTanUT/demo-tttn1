@@ -270,4 +270,4 @@ GET {{host}}/admin/analytics/v2
 GET {{host1}}/admin/lastBanner
 
 ###
-GET {{host1}}/category
+GET {{host}}/product

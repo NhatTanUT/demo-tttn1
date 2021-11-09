@@ -978,7 +978,7 @@ class AdminController {
         }
         foundLogMonth = tempArray
         foundLogMonth = foundLogMonth.concat(foundLogToday)
-  
+        
         // console.log(foundLogToday);
         // console.log(foundLogWeek);
         // console.log(foundLogMonth);

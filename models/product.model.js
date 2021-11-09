@@ -48,7 +48,7 @@ const productSchema = new mongoose.Schema({
         type: String
     },
     "quickFact": [{
-        type: Array
+        type: String
     }]
 })
 
