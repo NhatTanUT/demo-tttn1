@@ -129,13 +129,13 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/admin/discount
+POST {{host1}}/admin/discount
 Content-Type: application/json
 
 {
-    "code": "TEST2",
-    "expireDate": "Mon Oct 31 2021 13:44:00 GMT+0700 (Indochina Time)",
-    "startDate": "Mon Oct 13 2021 13:44:00 GMT+0700 (Indochina Time)",
+    "code": "TEST4",
+    "expireDate": "Mon Nov 28 2021 13:45:07 GMT+0700 (Indochina Time)",
+    "startDate": "Mon Nov 22 2021 13:44:00 GMT+0700 (Indochina Time)",
     "amount": 50
 
 }
@@ -171,7 +171,7 @@ Content-Type: application/json
 
 {
     "code": "HELLOWORLD",
-    "expireDate": "Tue Oct 12 2021 20:34:16 GMT+0700 (Indochina Time)",
+    "expireDate": "Tue Dec 12 2021 20:34:16 GMT+0700 (Indochina Time)",
     "amount": 60
 }
 
@@ -189,38 +189,39 @@ Content-Type: application/json
 }
 
 ###
-POST {{host1}}/addOrder
+POST {{host}}/addOrder
 Content-Type: application/json
 
 {
-    "orderItems": [{
-        "idProduct": "61124f8570dfe42c98e9925f",
-        "name": "ssvsdvdsvd",
-        "quantity": 2,
-        "price": 59
-    }, {
-        "idProduct": "611ca8c435f54f9329280f50",
-        "name": "sdifkjsdhkds",
-        "quantity": 2,
-        "price": 0
-    }],
-    "idUser": "615331ffc7dc43e2e5c84f45",
-    "discount": "",
-    "email": "nhattan24121999@gmail.com",
-    "firstName": "123456",
-    "lastName": "123456",
-    "company": "gwegweg",
-    "address": "Ho Chi Minh",
-    "apartment": "wegwegew",
-    "city": "Ho Chi Minh",
-    "country": "Viet Nam",
-    "postalCode": "123456",
-    "phone": "123456",
-    "number": 4242424242424242,
-    "exp_month": 12,
-    "exp_year": 2025,
-    "cvc": 522
+  "orderItems": [
+    {
+      "idProduct": "61125d7b516b371f38dc4123",
+      "name": "Vuetify Material Kit",
+      "quantity": 1,
+      "price": 39,
+      "percent": 20
+    }
+  ],
+  "status": "Paid",
+  "idUser": "616590ce2cf0c93c3f9153ce",
+  "total": 39,
+  "discount": "",
+  "email": "nhattan24121999@gmail.com",
+  "firstName": "Nhat",
+  "lastName": "Tan",
+  "company": "43434",
+  "address": "343434",
+  "apartment": "43434",
+  "city": "3434",
+  "country": "Albania",
+  "postalCode": "4343",
+  "phone": "434",
+  "number": 4242424242424242,
+  "exp_month": 12,
+  "exp_year": 2025,
+  "cvc": 522
 }
+
 
 ###
 POST {{host}}/login
@@ -270,4 +271,4 @@ GET {{host}}/admin/analytics/v2
 GET {{host1}}/admin/lastBanner
 
 ###
-GET {{host}}/product
+GET {{host1}}/product

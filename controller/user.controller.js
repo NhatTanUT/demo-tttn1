@@ -521,7 +521,7 @@ class UserController {
       // Use discount
       if (foundDiscount) {
         discount = foundDiscount.code;
-        total = Math.round(total * Number(foundDiscount.amount)) / 100;
+        total = Math.round((total * (100 - Number(foundDiscount.amount)) / 100) * 100) / 100;
       }
 
       let field = {
@@ -579,7 +579,7 @@ class UserController {
       return next();
     } catch (error) {
       console.log(error);
-      return next(createError(500, error.message));
+      return next(createError(500, error));
     }
   }
   async getOrders(req, res, next) {
@@ -815,6 +815,7 @@ class UserController {
       let { email, firstName, lastName, number, exp_month, exp_year, cvc } =
         req.body;
       // const id = req.user._id;
+      // console.log(res.locals.newOrder);
 
       const customer = await stripe.customers.create({
         email: email,
@@ -838,7 +839,7 @@ class UserController {
       token = await stripe.tokens.create(param);
 
       const charge = await stripe.charges.create({
-        amount: res.locals.newOrder.total * 100,
+        amount: Math.round((res.locals.newOrder.total * 100) * 100) / 100,
         description: "Order #" + res.locals.newOrder._id,
         currency: "usd",
         source: token.id,
