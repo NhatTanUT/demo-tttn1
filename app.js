@@ -37,6 +37,9 @@ app.use(express.static(pathPublic));
 //   next();
 // });
 
+// =============== GLOBAL VAR =================
+global.schedule = []
+
 // =============== MONGOOSE ==================
 const connectDatabase = require('./config/db.config');
 

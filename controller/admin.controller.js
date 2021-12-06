@@ -120,8 +120,12 @@ class AdminController {
         { id: update.idProduct },
         { $set: update }
       );
-      if (foundProduct.matchedCount === 1)
-        return res.json({ msg: "Update product success", update });
+      if (foundProduct.matchedCount === 1) {
+
+        req.locals.update = update
+        res.json({ msg: "Update product success", update });
+        return next()
+      }
       else return next(createError(500, "Cant find productid"));
     } catch (error) {
       console.log(error);
@@ -164,7 +168,7 @@ class AdminController {
   }
   async sendMailWishList(req, res, next) {
     try {
-      const { idProduct, price } = req.body;
+      const { idProduct } = res.locals.update;
       const subject = "Your wishlist product has changed in price";
 
       const foundProduct = await Product.findOne({
@@ -435,6 +439,8 @@ class AdminController {
           { $set: { percent: percent } },
           { multi: true }
         );
+
+        
         
         if (found.modifiedCount === 0) {
           return next(createError(500, "Error update price"));
