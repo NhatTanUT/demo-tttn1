@@ -120,13 +120,12 @@ class AdminController {
         { id: update.idProduct },
         { $set: update }
       );
-      if (foundProduct.matchedCount === 1) {
-
-        req.locals.update = update
+      if (foundProduct.matchedCount !== 0) {
         res.json({ msg: "Update product success", update });
-        return next()
+        res.locals.update = update
+        next()
       }
-      else return next(createError(500, "Cant find productid"));
+      else next(createError(500, "Cant find productid"));
     } catch (error) {
       console.log(error);
       return next(createError(500, error.message));
@@ -359,11 +358,6 @@ class AdminController {
         })
       );
 
-      return res.json({
-        msg: "Send Mail WishList",
-        foundWishlist,
-        foundProduct,
-      });
     } catch (error) {
       return next(createError(500, error.message));
     }

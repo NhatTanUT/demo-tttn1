@@ -29,7 +29,7 @@ router.post(
 router
   .route("/product")
   .post(uploadMultiple, AdminController.addProduct)
-  .patch(uploadMultiple, AdminController.updateProduct)
+  .patch(uploadMultiple, AdminController.updateProduct, AdminController.sendMailWishList)
   .delete(AdminController.removeProduct);
 
 router
