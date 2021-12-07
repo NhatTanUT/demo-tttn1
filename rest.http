@@ -22,13 +22,13 @@ content-type: application/json
 }
 
 ###
-PATCH {{host}}/admin/product
+PATCH {{host1}}/admin/product
 Content-Type: application/json
 
 {
-    "idProduct": "611e71cf37725149c830aa05",
+    "idProduct": "1",
     "update": {
-        "quantity": 10
+        "price": 49
     }
 }
 

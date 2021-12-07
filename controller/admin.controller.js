@@ -241,33 +241,21 @@ class AdminController {
                                               <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #bbbbbb;">
                                                   <tbody>
                                                       <tr>
-                                                          <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
-                                                              Delivery Adderss
-                                                          </td>
                                                           <td style="width: 45%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
-                                                              Billing Address
+                                                              Address
                                                           </td>
                                                       </tr>
                                                       <tr>
-                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
-                                                              James C Painter
-                                                          </td>
                                                           <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666;">
                                                               James C Painter
                                                           </td>
                                                       </tr>
                                                       <tr>
-                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666;">
-                                                              3939  Charles Street, Farmington Hills
-                                                          </td>
                                                           <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666;">
                                                               3939  Charles Street, Farmington Hills
                                                           </td>
                                                       </tr>
                                                       <tr>
-                                                          <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
-                                                              Michigan, 48335
-                                                          </td>
                                                           <td style="width: 45%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
                                                               Michigan, 48335
                                                           </td>
@@ -850,7 +838,10 @@ class AdminController {
         { $sort: { _id: 1 } },
       ]);
 
-      console.log(foundOrder);
+      // Round total
+      for (let e of foundOrder) {
+        e.total = Math.round(e.total * 100) / 100
+      }
 
       let sum = 0;
 
