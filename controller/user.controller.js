@@ -346,7 +346,9 @@ class UserController {
   async getOrders(req, res, next) {
     try {
       const id = req.user._id;
-      const orders = await Order.find({ idUser: id }).lean();
+      const orders = await Order.find({ idUser: id });
+
+      console.log(orders);
 
       for(let el of orders) {
         for (let e of el.OrderItems) {
@@ -591,16 +593,16 @@ class UserController {
       return next(createError(500, error));
     }
   }
-  async getOrders(req, res, next) {
-    try {
-      const id = req.user._id;
-      const orders = await Order.find({ idUser: id }).lean();
+  // async getOrders(req, res, next) {
+  //   try {
+  //     const id = req.user._id;
+  //     const orders = await Order.find({ idUser: id }).lean();
 
-      res.json(orders);
-    } catch (error) {
-      return next(createError(500, error.message));
-    }
-  }
+  //     res.json(orders);
+  //   } catch (error) {
+  //     return next(createError(500, error.message));
+  //   }
+  // }
   async sendResetPassword(req, res, next) {
     try {
       const { email } = req.body;
