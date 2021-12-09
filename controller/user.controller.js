@@ -354,6 +354,7 @@ class UserController {
             e.price = Math.round(e.price * (100 - e.percent) / 100 * 100) / 100;
           }
         }
+        el.total = Math.round(el.total * 100) / 100;
       }
 
       res.json(orders);
