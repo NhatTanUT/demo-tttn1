@@ -348,6 +348,14 @@ class UserController {
       const id = req.user._id;
       const orders = await Order.find({ idUser: id }).lean();
 
+      for(let el of orders) {
+        for (let e of el.OrderItems) {
+          if (e.percent) {
+            e.price = Math.round(e.price * (100 - e.percent) / 100 * 100) / 100;
+          }
+        }
+      }
+
       res.json(orders);
     } catch (error) {
       return next(createError(500, error.message));

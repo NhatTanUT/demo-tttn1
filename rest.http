@@ -198,8 +198,7 @@ Content-Type: application/json
       "idProduct": "61125d7b516b371f38dc4123",
       "name": "Vuetify Material Kit",
       "quantity": 1,
-      "price": 39,
-      "percent": 20
+      "price": 39
     }
   ],
   "status": "Paid",
@@ -265,7 +264,7 @@ Content-Type: application/json
 ###
 GET {{host1}}/admin/analytics
 ###
-GET {{host}}/admin/analytics/v2
+GET {{host1}}/admin/analytics/v2
 
 ###
 GET {{host1}}/admin/lastBanner

@@ -23,6 +23,9 @@ var orderSchema = mongoose.Schema({
         type: Number,
         required: true,
       },
+      "percent": {
+        type: Number
+      }
     },
   ],
   "status": {
